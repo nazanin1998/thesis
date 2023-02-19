@@ -1,0 +1,37 @@
+Colab config// GitHub fetch
+
+1 =====================
+!git clone https://github.com/nazanin1998/rumor_detection_project.git
+
+2 =====================
+cd rumor_detection_project/
+
+3 =====================
+!git checkout colab
+
+4 =====================
+!git config --global user.email "na.fereydooni@yahoo.com"
+!git config --global user.name "Nazanin FereydooniZade"
+!git add .
+!git commit -m "colab"
+!git push https://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@github.com/nazanin1998/rumor_detection_project.git
+
+!git pull origin colab
+
+5 =====================
+import nltk
+nltk.download('omw-1.4')
+nltk.download('wordnet')
+nltk.download('stopwords')
+
+
+!pip install sentence_transformers
+!pip install transformers
+!pip install contractions
+
+!pip install
+!pip install
+
+￼
+
+
