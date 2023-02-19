@@ -2,6 +2,7 @@ import tensorflow
 
 preprocess_seq_length = 128
 preprocess_batch_size = 128
+bert_batch_size = 32
 preprocess_buffer_size = tensorflow.data.AUTOTUNE
 
 r"""

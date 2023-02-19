@@ -3,7 +3,7 @@ import os
 from matplotlib import pyplot as plt
 from transformers import AdamW
 
-from lib.training_modules.bert.bert_configurations import bert_dropout_rate, preprocess_batch_size, \
+from lib.training_modules.bert.bert_configurations import bert_dropout_rate, bert_batch_size, \
     bert_epochs
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
@@ -38,8 +38,8 @@ class BertModelImpl(MyBertModel):
 
         metrics, loss = self.get_metrics_and_loss()
 
-        steps_per_epoch = train_len // preprocess_batch_size
-        validation_steps = validation_len // preprocess_batch_size
+        steps_per_epoch = train_len // bert_batch_size
+        validation_steps = validation_len // bert_batch_size
         num_train_steps = steps_per_epoch * bert_epochs
         num_warmup_steps = num_train_steps // 10
 
@@ -61,7 +61,7 @@ class BertModelImpl(MyBertModel):
 
         classifier_model.fit(
             x=train_tensor_dataset,
-            batch_size=preprocess_batch_size,
+            batch_size=bert_batch_size,
             validation_data=val_tensor_dataset,
             steps_per_epoch=steps_per_epoch,
             epochs=bert_epochs,

@@ -1,4 +1,6 @@
 Colab config// GitHub fetch
+0 =====================
+Executing the below code which will provide you with an authentication link
 
 1 =====================
 !git clone https://github.com/nazanin1998/rumor_detection_project.git
@@ -31,6 +33,11 @@ nltk.download('stopwords')
 
 !pip install
 !pip install
+
+//new pip installs for colab
+!pip install tensorflow_text
+!pip install transformers
+!pip install tensorflow_addons
 
 ￼
 
