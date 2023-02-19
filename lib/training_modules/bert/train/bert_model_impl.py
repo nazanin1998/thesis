@@ -121,18 +121,30 @@ class BertModelImpl(MyBertModel):
         first_loss, accuracy = classifier_model.evaluate(test_tensor_dataset, )
 
         history_dict = classifier_model.history
-
-        acc = history_dict['binary_accuracy']
-        val_acc = history_dict['val_binary_accuracy']
-        loss = history_dict['loss']
-        val_loss = history_dict['val_loss']
+        acc, val_acc, loss, val_loss = 0, 0, 0, 0
+        try:
+            acc = history_dict['binary_accuracy']
+            log_phase_desc(f'Accuracy: {acc}')
+        except:
+            print()
+        try:
+            val_acc = history_dict['val_binary_accuracy']
+            log_phase_desc(f'Val Acc : {val_acc}')
+        except:
+            print()
+        try:
+            loss = history_dict['loss']
+            log_phase_desc(f'Loss    : {loss}')
+        except:
+            print()
+        try:
+            val_loss = history_dict['val_loss']
+            log_phase_desc(f'Val Loss: {val_loss}')
+        except:
+            print()
 
         log_phase_desc(f'Loss    : {first_loss}')
         log_phase_desc(f'Accuracy: {accuracy}')
-        log_phase_desc(f'Accuracy: {acc}')
-        log_phase_desc(f'Val Acc : {val_acc}')
-        log_phase_desc(f'Loss    : {loss}')
-        log_phase_desc(f'Val Loss: {val_loss}')
 
         return acc, val_acc, loss, val_loss
 
