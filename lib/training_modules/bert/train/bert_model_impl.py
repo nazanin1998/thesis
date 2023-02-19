@@ -93,7 +93,7 @@ class BertModelImpl(MyBertModel):
         log_line()
 
     def plot_model(self, acc, val_acc, loss, val_loss):
-        epochs = range(1, len(acc) + 1)
+        epochs = bert_epochs
         fig = plt.figure(figsize=(10, 6))
         fig.tight_layout()
 
@@ -151,7 +151,7 @@ class BertModelImpl(MyBertModel):
     def save_model(self,
                    bert_preprocess_model,
                    classifier_model,
-                   save_path='./saved_models',
+                   save_path='./saved_models2',
                    ):
 
         bert_type_name = self.bert_model_name.split('/')[-2]

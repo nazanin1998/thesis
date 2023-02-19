@@ -9,7 +9,7 @@ r"""
     In preprocessing we need to make input for each column of ds.
     By this parameter we are able to just consider text columns as input for bert.
     """
-preprocess_ignore_exc_str = True
+preprocess_ignore_exc_str = False
 
 init_lr = 2e-5
 
