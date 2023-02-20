@@ -9,6 +9,7 @@ from lib.models.event_model import EventModel
 from lib.models.tweet import Tweet
 from lib.models.tweet_tree import TweetTree
 from lib.read_datasets.pheme.file_dir_handler import FileDirHandler
+from lib.training_modules.bert.bert_configurations import only_source_tweet
 
 
 class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
@@ -99,26 +100,31 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
         self.df = pd.DataFrame(tweets)
 
         os.makedirs(constants.PHEME_CSV_DIR, exist_ok=True)
-        self.df.to_csv(constants.PHEME_CSV_PATH, index=False)
+        if only_source_tweet:
+            self.df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
+        else:
+            self.df.to_csv(constants.PHEME_CSV_PATH, index=False)
 
     def __extract_tweet_list_from_events(self):
         tweets = []
         for event in self.events:
 
             for rumour in event.rumors:
-                if rumour.source_tweet is not None:
+                if only_source_tweet and rumour.source_tweet is not None:
                     tweets.append(
                         rumour.source_tweet.to_json(is_rumour=0, event=event.name, is_source_tweet=0, reaction_text=''))
-                for reaction in rumour.reactions:
-                    tweets.append(
-                        reaction.to_json(is_rumour=0, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
+                if not only_source_tweet:
+                    for reaction in rumour.reactions:
+                        tweets.append(
+                            reaction.to_json(is_rumour=0, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
 
             for non_rumour in event.non_rumors:
-                if non_rumour.source_tweet is not None:
+                if only_source_tweet and non_rumour.source_tweet is not None:
                     tweets.append(non_rumour.source_tweet.to_json(is_rumour=1, event=event.name, is_source_tweet=0,
                                                                   reaction_text=''))
-                for reaction in non_rumour.reactions:
-                    tweets.append(
-                        reaction.to_json(is_rumour=1, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
+                if not only_source_tweet:
+                    for reaction in non_rumour.reactions:
+                        tweets.append(
+                            reaction.to_json(is_rumour=1, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
 
         return tweets

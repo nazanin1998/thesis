@@ -10,6 +10,7 @@ r"""
     By this parameter we are able to just consider text columns as input for bert.
     """
 preprocess_ignore_exc_str = True
+only_source_tweet = True
 
 init_lr = 2e-5
 

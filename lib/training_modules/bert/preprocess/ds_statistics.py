@@ -2,7 +2,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 from lib.training_modules.bert.bert_configurations import bert_test_size, bert_train_size, bert_val_size, \
-    preprocess_ignore_exc_str
+    preprocess_ignore_exc_str, only_source_tweet
 from lib.utils.log.logger import log_phase_desc
 
 
@@ -10,7 +10,11 @@ class DsStatistics:
 
     def __init__(self):
         self.__categorical_feature_names = ['event']
-        self.__str_feature_names = ['text', "reaction_text"]
+        if only_source_tweet:
+            self.__str_feature_names = ['text']
+        else:
+            self.__str_feature_names = ['text', "reaction_text"]
+
         self.__binary_feature_names = ['is_truncated', 'is_source_tweet', 'user.verified', 'user.protected', ]
         self.__numeric_feature_names = ['tweet_length', 'symbol_count', 'mentions_count', 'urls_count',
                                         'retweet_count', 'favorite_count', 'hashtags_count',

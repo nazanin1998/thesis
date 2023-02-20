@@ -6,6 +6,7 @@ from lib.models.event_model import EventModel
 from lib.models.tweet import Tweet
 from lib.models.tweet_tree import TweetTree
 from lib.read_datasets.pheme.file_dir_handler import FileDirHandler
+from lib.training_modules.bert.bert_configurations import only_source_tweet
 from lib.utils.log.logger import log_phase_desc
 from tabulate import tabulate
 
@@ -98,7 +99,10 @@ class ReadPhemeJsonDataset:
         self.df = pd.DataFrame(tweets)
 
         os.makedirs(constants.PHEME_CSV_DIR, exist_ok=True)
-        self.df.to_csv(constants.PHEME_CSV_PATH, index=False)
+        if only_source_tweet:
+            self.df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
+        else:
+            self.df.to_csv(constants.PHEME_CSV_PATH, index=False)
 
     def __extract_tweet_list_from_events(self):
         tweets = []
@@ -108,6 +112,7 @@ class ReadPhemeJsonDataset:
                 # if rumour.source_tweet is not None:
                 # else:
                 #     print('source tweet is non')
+
                 for reaction in rumour.reactions:
                     tweets.append(rumour.source_tweet.to_json(is_rumour=0, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
                     # tweets.append(reaction.to_json(is_rumour=0, event=event.name, is_source_tweet=1))
