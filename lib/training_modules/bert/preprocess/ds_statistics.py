@@ -2,7 +2,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 from lib.training_modules.bert.bert_configurations import bert_test_size, bert_train_size, bert_val_size, \
-    preprocess_ignore_exc_str, only_source_tweet
+    preprocess_ignore_exc_str, only_source_tweet, shuffle_data_splitting
 from lib.utils.log.logger import log_phase_desc
 
 
@@ -78,12 +78,16 @@ class DsStatistics:
 
     @staticmethod
     def train_val_test_split(x, y, train_size, val_size, test_size):
-        x_train_val, x_test, y_train_val, y_test = train_test_split(x, y, test_size=test_size)
+        x_train_val, x_test, y_train_val, y_test = train_test_split(x, y, test_size=test_size,
+                                                                    shuffle=shuffle_data_splitting,
+                                                                    stratify=None)
 
         relative_train_size = train_size / (val_size + train_size)
         x_train, x_val, y_train, y_val = train_test_split(x_train_val, y_train_val,
                                                           train_size=relative_train_size,
-                                                          test_size=1 - relative_train_size)
+                                                          test_size=1 - relative_train_size,
+                                                          shuffle=shuffle_data_splitting,
+                                                          stratify=None)
         return x_train, x_val, x_test, y_train, y_val, y_test
 
     @staticmethod

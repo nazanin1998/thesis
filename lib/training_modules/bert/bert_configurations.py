@@ -10,13 +10,14 @@ r"""
     By this parameter we are able to just consider text columns as input for bert.
     """
 preprocess_ignore_exc_str = True
-only_source_tweet = True
+only_source_tweet = False
 
 init_lr = 2e-5
 
 bert_epochs = 1
 bert_dropout_rate = 0.1
+shuffle_data_splitting = True
 
 bert_test_size = 0.2
-bert_train_size = 0.6
-bert_val_size = 0.2
+bert_train_size = 0.75
+bert_val_size = 0.05

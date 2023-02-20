@@ -114,6 +114,7 @@ class BertModelImpl(MyBertModel):
         plt.xlabel('Epochs')
         plt.ylabel('Accuracy')
         plt.legend(loc='lower right')
+        plt.savefig("plot_bert.png")
 
     def evaluation(self,
                    classifier_model,

@@ -97,18 +97,14 @@ class BertPreprocessingImpl(BertPreprocessing):
         train_size = x_train_tensor.shape[0]
         val_size = x_val_tensor.shape[0]
         test_size = x_test_tensor.shape[0]
-        with tf.device('/cpu:0'):
-            x_train_tensor_tuple = self.__make_tuple_from_tensor(x_train_tensor)
-            x_val_tensor_tuple = self.__make_tuple_from_tensor(x_val_tensor)
-            x_test_tensor_tuple = self.__make_tuple_from_tensor(x_test_tensor)
-            print(f"tuple x_train is {x_train_tensor_tuple}")
-            preprocessed_x_train = preprocessor_model(x_train_tensor_tuple)
-            print(f"Preprocessed_x_train result=> {preprocessed_x_train}")
+        # with tf.device('/cpu:0'):
+        x_train_tensor_tuple = self.__make_tuple_from_tensor(x_train_tensor)
+        x_val_tensor_tuple = self.__make_tuple_from_tensor(x_val_tensor)
+        x_test_tensor_tuple = self.__make_tuple_from_tensor(x_test_tensor)
 
-            preprocessed_x_val = preprocessor_model(x_val_tensor_tuple)
-            print(f"preprocessed_x_val result=> {preprocessed_x_val}")
-            preprocessed_x_test = preprocessor_model(x_test_tensor_tuple)
-            print(f"preprocessed_x_test result=> {preprocessed_x_test}")
+        preprocessed_x_train = preprocessor_model(x_train_tensor_tuple)
+        preprocessed_x_val = preprocessor_model(x_val_tensor_tuple)
+        preprocessed_x_test = preprocessor_model(x_test_tensor_tuple)
 
         train_tensor_dataset = self.make_tensor_ds_of_preprocessed_data(
             label_tensor=y_train_tensor,
