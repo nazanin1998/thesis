@@ -11,6 +11,7 @@ r"""
     """
 preprocess_ignore_exc_str = True
 only_source_tweet = False
+save_bert_model_path = './saved_models_1'
 
 init_lr = 2e-5
 

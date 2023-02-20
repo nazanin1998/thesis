@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from transformers import AdamW
 
 from lib.training_modules.bert.bert_configurations import bert_dropout_rate, bert_batch_size, \
-    bert_epochs
+    bert_epochs, save_bert_model_path
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
 import tensorflow as tf
@@ -152,7 +152,7 @@ class BertModelImpl(MyBertModel):
     def save_model(self,
                    bert_preprocess_model,
                    classifier_model,
-                   save_path='./saved_models2',
+                   save_path=save_bert_model_path,
                    ):
 
         bert_type_name = self.bert_model_name.split('/')[-2]
