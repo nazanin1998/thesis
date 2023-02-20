@@ -12,7 +12,7 @@ r"""
 preprocess_ignore_exc_str = True
 only_source_tweet = False
 save_bert_model_path = './saved_models_1'
-
+bert_preprocess_do_vectorization = True
 init_lr = 2e-5
 
 bert_epochs = 1

@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from transformers import AdamW
 
 from lib.training_modules.bert.bert_configurations import bert_dropout_rate, bert_batch_size, \
-    bert_epochs, save_bert_model_path
+    bert_epochs, save_bert_model_path, init_lr
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
 import tensorflow as tf
@@ -51,13 +51,11 @@ class BertModelImpl(MyBertModel):
         #     num_warmup_steps=num_warmup_steps,
         #     optimizer_type='adamw')
 
-        print("adam")
-        optimizer = tf.keras.optimizers.Adam(learning_rate=2e-5)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=init_lr)
 
         classifier_model.compile(
             optimizer=optimizer,
             loss=loss, metrics=[metrics])
-        print("optimizer")
 
         classifier_model.fit(
             x=train_tensor_dataset,
@@ -67,7 +65,6 @@ class BertModelImpl(MyBertModel):
             epochs=bert_epochs,
             validation_steps=validation_steps,
         )
-        print("fit")
 
         try:
             classifier_model.summary()
@@ -119,8 +116,6 @@ class BertModelImpl(MyBertModel):
     def evaluation(self,
                    classifier_model,
                    test_tensor_dataset):
-        first_loss, accuracy = classifier_model.evaluate(test_tensor_dataset, )
-
         history_dict = classifier_model.history
         acc, val_acc, loss, val_loss = 0, 0, 0, 0
         try:
@@ -143,6 +138,8 @@ class BertModelImpl(MyBertModel):
             log_phase_desc(f'Val Loss: {val_loss}')
         except:
             print()
+
+        first_loss, accuracy = classifier_model.evaluate(test_tensor_dataset, )
 
         log_phase_desc(f'Loss    : {first_loss}')
         log_phase_desc(f'Accuracy: {accuracy}')

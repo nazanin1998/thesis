@@ -1,4 +1,6 @@
-from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str
+import numpy as np
+
+from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str, bert_preprocess_do_vectorization
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
@@ -80,15 +82,18 @@ class BertPreprocessLayerMaker:
             if name not in str_feature_names:
                 continue
             print(f"do preprocess layer for => {name} , input ={input_item}")
-            tokenizer = hub.KerasLayer(bert_preprocess.tokenize, name=f'tokenizer{name}')
-            preprocessed_item = tokenizer(input_item)
+            if bert_preprocess_do_vectorization:
+                r"""first approach"""
+                lookup = tf.keras.layers.StringLookup(vocabulary=np.unique(df[name]))
+                one_hot = tf.keras.layers.CategoryEncoding(num_tokens=lookup.vocabulary_size())
+                # one_hot = tf.keras.layers.Embedding(input_dim=lookup.vocabulary_size(), output_dim=None)
+                x = lookup(input_item)
+                preprocessed_item = one_hot(x)
+            else:
+                tokenizer = hub.KerasLayer(bert_preprocess.tokenize, name=f'tokenizer{name}')
+                preprocessed_item = tokenizer(input_item)
 
-            r"""first approach"""
-            # lookup = tf.keras.layers.StringLookup(vocabulary=np.unique(df[name]))
-            # one_hot = tf.keras.layers.CategoryEncoding(num_tokens=lookup.vocabulary_size())
-            # # one_hot = tf.keras.layers.Embedding(input_dim=lookup.vocabulary_size(), output_dim=None)
-            # x = lookup(input_item)
-            # preprocessed_item = one_hot(x)
+
 
             r"""second approach"""
             # text_vectorizer = tf.keras.layers.TextVectorization()
