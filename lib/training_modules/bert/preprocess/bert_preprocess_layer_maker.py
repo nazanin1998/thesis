@@ -44,7 +44,7 @@ class BertPreprocessLayerMaker:
         for name in binary_feature_names:
             inp = inputs[name]
             inp = inp[:, tf.newaxis]
-            float_value = tf.cast(inp, tf.float32)
+            float_value = tf.cast(inp, tf.float32, )
             preprocess_layers.append(float_value)
 
         return preprocess_layers
@@ -79,7 +79,7 @@ class BertPreprocessLayerMaker:
         for name, input_item in inputs.items():
             if name not in str_feature_names:
                 continue
-
+            print(f"do preprocess layer for => {name} , input ={input_item}")
             tokenizer = hub.KerasLayer(bert_preprocess.tokenize, name=f'tokenizer{name}')
             preprocessed_item = tokenizer(input_item)
 

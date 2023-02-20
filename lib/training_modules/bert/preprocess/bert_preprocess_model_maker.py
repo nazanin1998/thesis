@@ -13,9 +13,6 @@ class BertPreprocessModelMaker:
         packer = hub.KerasLayer(bert_pack,
                                 arguments=dict(seq_length=preprocess_seq_length),
                                 name='packer')
-        # encoder_inputs = bert_preprocess.bert_pack_inputs(
-        #     [tokenized_premises, tokenized_hypotheses],
-        #     seq_length=18)  # Optional argument, defaults to 128.
 
         preprocessed_result = packer(preprocess_layers)
         # preprocessed_result = tf.concat(preprocess_layers, axis=-1)

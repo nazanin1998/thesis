@@ -1,4 +1,4 @@
-import numpy as np
+from pandas import DataFrame
 
 from lib.training_modules.bert.bert_model_name import get_bert_preprocess_model_name
 from lib.training_modules.bert.preprocess.bert_input_maker import BertInputMaker
@@ -9,8 +9,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
 
-from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str, \
-    preprocess_seq_length, preprocess_batch_size, preprocess_buffer_size
+from lib.training_modules.bert.bert_configurations import preprocess_batch_size, preprocess_buffer_size
 from lib.training_modules.bert.preprocess.ds_statistics import DsStatistics
 from lib.utils.log.logger import log_start_phase, log_end_phase, log_line
 
@@ -35,8 +34,9 @@ class BertPreprocessingImpl(BertPreprocessing):
             df,
             self.str_feature_names,
             self.categorical_feature_names,
-            self.binary_feature_names)
-        print(f"BertInputMaker result:\n{inputs}")
+            self.binary_feature_names,
+            self.numeric_feature_names)
+        print(f"BertInputMaker result: {len(inputs)}")
 
         bert_preprocess = self.get_bert_preprocess_model()
 
@@ -131,10 +131,17 @@ class BertPreprocessingImpl(BertPreprocessing):
         return train_tensor_dataset, val_tensor_dataset, test_tensor_dataset
 
     @staticmethod
-    def __make_tuple_from_tensor( x_tensor):
+    def __make_tuple_from_tensor(x_tensor):
         my_list = list()
-        for idx in range(0, x_tensor.shape[1]):
-            my_list.append(x_tensor[:, idx])
+        print(x_tensor.keys()[0])
+        # for idx in range(0, x_tensor.shape[1]):
+        #     print(f"idx {idx}")
+        #     print(f"x_tensor {type(x_tensor)}")
+        #     my_list.append(x_tensor[:, idx])
+        for col_name in x_tensor.keys():
+            # print(f"idx {col_name}")
+            # print(f"idx {x_tensor[col_name]}")
+            my_list.append(x_tensor[col_name])
         return tuple(my_list)
 
     def make_tensor_ds_of_preprocessed_data(

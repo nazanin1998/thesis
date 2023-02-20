@@ -1,15 +1,15 @@
 import tensorflow
 
 preprocess_seq_length = 128
-preprocess_batch_size = 16
-bert_batch_size = 16
+preprocess_batch_size = 32
+bert_batch_size = 32
 preprocess_buffer_size = tensorflow.data.AUTOTUNE
 
 r"""
     In preprocessing we need to make input for each column of ds.
     By this parameter we are able to just consider text columns as input for bert.
     """
-preprocess_ignore_exc_str = False
+preprocess_ignore_exc_str = True
 
 init_lr = 2e-5
 
