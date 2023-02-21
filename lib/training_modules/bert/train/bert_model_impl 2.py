@@ -53,18 +53,10 @@ class BertModelImpl(MyBertModel):
         #     num_train_steps=num_train_steps,
         #     num_warmup_steps=num_warmup_steps,
         #     optimizer_type='adamw')
-
         if bert_optimizer == 'adam':
             return tf.keras.optimizers.Adam(learning_rate=init_lr)
-        elif bert_optimizer == "sgd":
+        else:
             return tf.keras.optimizers.SGD(learning_rate=init_lr)
-        elif bert_optimizer == "adamax":
-            return tf.keras.optimizers.Adamax(learning_rate=init_lr)
-        elif bert_optimizer == "adadelta":
-            return tf.keras.optimizers.Adadelta(learning_rate=init_lr)
-        elif bert_optimizer == "adagrad":
-            return tf.keras.optimizers.Adagrad(learning_rate=init_lr)
-
 
     def __fit_model(self, model):
         history = model.fit(

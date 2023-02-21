@@ -2,7 +2,6 @@ import sys
 import logging
 
 # from rainbow_logging_handler import RainbowLoggingHandler
-from datetime import datetime
 
 """Print a string `s` indented with `n` tabs at each newline"""
 
@@ -12,15 +11,15 @@ def log_line():
 
 
 def log_start_phase(phase_num, description):
-    print(f"<< PHASE - {phase_num} <==> {description} @ {datetime.now()}>>")
+    print(f"<< PHASE - {phase_num} <==> {description} >>")
 
 
 def log_end_phase(phase_num, description):
-    print(f"<< PHASE - {phase_num} <==> {description} DONE @ {datetime.now()}>> ")
+    print(f"<< PHASE - {phase_num} <==> {description} DONE >>")
 
 
 def log_phase_desc(description):
-    print(f"\t{description} @ {datetime.now()}")
+    print(f"\t{description}")
 
 
 def print_indented(n, s):

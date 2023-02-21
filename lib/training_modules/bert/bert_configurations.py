@@ -12,9 +12,9 @@ r"""
 preprocess_ignore_exc_str = True
 only_source_tweet = False
 save_bert_model_dir = './saved_models'
-save_bert_model_name = 'res5_bert'
+save_bert_model_name = 'res6_bert'
 init_lr = 3e-5
-bert_optimizer = 'sgd'  # sgd, adam
+bert_optimizer = 'adamax'  # sgd, adam, adamax, adadelta, adagrad
 
 bert_epochs = 1
 bert_dropout_rate = 0.1
