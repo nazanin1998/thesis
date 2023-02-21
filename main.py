@@ -4,6 +4,7 @@ import os
 
 from lib.read_datasets.pheme.read_pheme_ds import read_pheme_ds
 from lib.training_modules.bert.preprocess.bert_preprocessing_impl import BertPreprocessingImpl
+# from lib.training_modules.bert.reload.bert_model_reload import BertModelReload
 from lib.training_modules.bert.train.bert_model_impl import BertModelImpl
 
 r"""
@@ -13,24 +14,23 @@ r"""
     4- Run Bert
 """
 
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 df = read_pheme_ds()
 
-train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len,\
-    bert_preprocess_model = BertPreprocessingImpl().start(df=df)
+train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
+bert_preprocess_model = BertPreprocessingImpl().start(df=df)
 
-BertModelImpl().start(
-    train_tensor_dataset=train_tensor_dataset,
-    val_tensor_dataset=val_tensor_dataset,
-    test_tensor_dataset=test_tensor_dataset,
-    test_len=test_len,
-    train_len=train_len,
-    validation_len=validation_len,
-    label_classes=label_classes,
-    bert_preprocess_model=bert_preprocess_model)
+BertModelImpl(train_tensor_dataset=train_tensor_dataset,
+              val_tensor_dataset=val_tensor_dataset,
+              test_tensor_dataset=test_tensor_dataset,
+              test_len=test_len,
+              train_len=train_len,
+              validation_len=validation_len,
+              num_classes=label_classes,
+              bert_preprocess_model=bert_preprocess_model).start()
 
+# BertModelReload(train_tensor_dataset)
 # bert_test(preprocessed_df)
 #
 # print('preprocessed ds')

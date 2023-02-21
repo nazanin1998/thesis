@@ -6,7 +6,7 @@ from lib.training_modules.bert.bert_configurations import bert_test_size, bert_t
 from lib.utils.log.logger import log_phase_desc
 
 
-class DsStatistics:
+class BertPreprocessDsStatistics:
 
     def __init__(self):
         self.__categorical_feature_names = ['event']
@@ -46,8 +46,6 @@ class DsStatistics:
     ):
         x = df[self.__training_features_name]
 
-        print(f"x {x}")
-        print(f"x.shape {x.shape}")
         y = df[self.__label_feature_name]
 
         label_classes = len(y.value_counts())
@@ -65,7 +63,6 @@ class DsStatistics:
         y_val_tensor = y_val
         y_test_tensor = y_test
         # x_train_tensor = self.__convert_to_tensor(x_train, dtype=tf.string)
-        #
         # x_val_tensor = self.__convert_to_tensor(x_val, dtype=tf.string)
         # x_test_tensor = self.__convert_to_tensor(x_test, dtype=tf.string)
         # y_train_tensor = self.__convert_to_tensor(y_train, dtype=tf.int64)

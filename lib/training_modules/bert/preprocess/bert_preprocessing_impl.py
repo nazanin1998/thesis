@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from lib.training_modules.bert.bert_model_name import get_bert_preprocess_model_name
-from lib.training_modules.bert.preprocess.bert_input_maker import BertInputMaker
+from lib.training_modules.bert.preprocess.bert_preprocess_input_maker import BertPreprocessInputMaker
 from lib.training_modules.bert.preprocess.bert_preprocess_layer_maker import BertPreprocessLayerMaker
 from lib.training_modules.bert.preprocess.bert_preprocess_model_maker import BertPreprocessModelMaker
 from lib.training_modules.bert.preprocess.bert_preprocessing import BertPreprocessing
@@ -10,7 +10,7 @@ import tensorflow_hub as hub
 import tensorflow_text
 
 from lib.training_modules.bert.bert_configurations import preprocess_batch_size, preprocess_buffer_size
-from lib.training_modules.bert.preprocess.ds_statistics import DsStatistics
+from lib.training_modules.bert.preprocess.bert_preprocess_ds_statistics import BertPreprocessDsStatistics
 from lib.utils.log.logger import log_start_phase, log_end_phase, log_line
 
 
@@ -20,7 +20,7 @@ class BertPreprocessingImpl(BertPreprocessing):
             bert_model_name='bert_en_uncased_L-12_H-768_A-12'):
         self.label_feature_name, self.categorical_feature_names, self.binary_feature_names, self.numeric_feature_names, \
         self.str_feature_names = \
-            DsStatistics().get_categorical_binary_numeric_string_feature_names()
+            BertPreprocessDsStatistics().get_categorical_binary_numeric_string_feature_names()
 
         self.bert_preprocess_model_name = get_bert_preprocess_model_name(bert_model_name=bert_model_name)
 
@@ -28,15 +28,14 @@ class BertPreprocessingImpl(BertPreprocessing):
         log_start_phase(2, 'BERT PREPROCESSING')
 
         label_classes, x_train_tensor, x_val_tensor, x_test_tensor, y_train_tensor, y_val_tensor, y_test_tensor = \
-            DsStatistics().get_train_val_test_tensors(df=df)
+            BertPreprocessDsStatistics().get_train_val_test_tensors(df=df)
 
-        inputs = BertInputMaker.make_input_for_all_ds_columns(
+        inputs = BertPreprocessInputMaker.make_input_for_all_ds_columns(
             df,
             self.str_feature_names,
             self.categorical_feature_names,
             self.binary_feature_names,
             self.numeric_feature_names)
-        print(f"BertInputMaker result: {len(inputs)}")
 
         bert_preprocess = self.get_bert_preprocess_model()
 
@@ -47,7 +46,6 @@ class BertPreprocessingImpl(BertPreprocessing):
             self.str_feature_names,
             bert_preprocess,
             df)
-        print(f"BertPreprocessLayerMaker result:\n{preprocess_layers}")
 
         bert_pack = self.__get_bert_pack_model(bert_preprocess)
 
@@ -97,14 +95,14 @@ class BertPreprocessingImpl(BertPreprocessing):
         train_size = x_train_tensor.shape[0]
         val_size = x_val_tensor.shape[0]
         test_size = x_test_tensor.shape[0]
-        # with tf.device('/cpu:0'):
-        x_train_tensor_tuple = self.__make_tuple_from_tensor(x_train_tensor)
-        x_val_tensor_tuple = self.__make_tuple_from_tensor(x_val_tensor)
-        x_test_tensor_tuple = self.__make_tuple_from_tensor(x_test_tensor)
+        with tf.device('/cpu:0'):
+            x_train_tensor_tuple = self.__make_tuple_from_tensor(x_train_tensor)
+            x_val_tensor_tuple = self.__make_tuple_from_tensor(x_val_tensor)
+            x_test_tensor_tuple = self.__make_tuple_from_tensor(x_test_tensor)
 
-        preprocessed_x_train = preprocessor_model(x_train_tensor_tuple)
-        preprocessed_x_val = preprocessor_model(x_val_tensor_tuple)
-        preprocessed_x_test = preprocessor_model(x_test_tensor_tuple)
+            preprocessed_x_train = preprocessor_model(x_train_tensor_tuple)
+            preprocessed_x_val = preprocessor_model(x_val_tensor_tuple)
+            preprocessed_x_test = preprocessor_model(x_test_tensor_tuple)
 
         train_tensor_dataset = self.make_tensor_ds_of_preprocessed_data(
             label_tensor=y_train_tensor,
@@ -129,14 +127,9 @@ class BertPreprocessingImpl(BertPreprocessing):
     @staticmethod
     def __make_tuple_from_tensor(x_tensor):
         my_list = list()
-        print(x_tensor.keys()[0])
         # for idx in range(0, x_tensor.shape[1]):
-        #     print(f"idx {idx}")
-        #     print(f"x_tensor {type(x_tensor)}")
         #     my_list.append(x_tensor[:, idx])
         for col_name in x_tensor.keys():
-            # print(f"idx {col_name}")
-            # print(f"idx {x_tensor[col_name]}")
             my_list.append(x_tensor[col_name])
         return tuple(my_list)
 

@@ -3,7 +3,8 @@ import tensorflow as tf
 from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str
 
 
-class BertInputMaker:
+class BertPreprocessInputMaker:
+
     # string dtype = string
     # int dtype = float32
     # categorical and binary dtype = int64

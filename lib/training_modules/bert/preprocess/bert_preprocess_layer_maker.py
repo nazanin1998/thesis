@@ -1,11 +1,7 @@
-import numpy as np
-
 from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
-
-from lib.training_modules.bert.bert_model_name import get_bert_preprocess_model_name
 
 
 class BertPreprocessLayerMaker:
