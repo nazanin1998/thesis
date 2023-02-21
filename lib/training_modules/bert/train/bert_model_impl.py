@@ -3,7 +3,7 @@ import os
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import bert_dropout_rate, bert_batch_size, \
     bert_epochs, save_bert_model_dir, init_lr, save_bert_model_name, preprocess_seq_length, preprocess_batch_size, \
-    preprocess_buffer_size, only_source_tweet, shuffle_data_splitting
+    preprocess_buffer_size, only_source_tweet, shuffle_data_splitting, bert_optimizer
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
 import tensorflow as tf
@@ -53,8 +53,10 @@ class BertModelImpl(MyBertModel):
         #     num_train_steps=num_train_steps,
         #     num_warmup_steps=num_warmup_steps,
         #     optimizer_type='adamw')
-
-        return tf.keras.optimizers.Adam(learning_rate=init_lr)
+        if bert_optimizer == 'adam':
+            return tf.keras.optimizers.Adam(learning_rate=init_lr)
+        else:
+            return tf.keras.optimizers.SGD(learning_rate=init_lr)
 
     def __fit_model(self, model):
         history = model.fit(
@@ -78,6 +80,7 @@ class BertModelImpl(MyBertModel):
         log_phase_desc(f'Bert epochs              : {bert_epochs}')
         log_phase_desc(f'Bert dropout rate        : {bert_dropout_rate}')
         log_phase_desc(f'Bert learning rate       : {init_lr}')
+        log_phase_desc(f'Bert optimizer           : {bert_optimizer}')
         log_phase_desc(f'Assume only source tweets: {only_source_tweet}')
 
         classifier_model = self.build_classifier_model(self.__num_classes)

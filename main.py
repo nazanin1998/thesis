@@ -14,7 +14,7 @@ r"""
     4- Run Bert
 """
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 df = read_pheme_ds()
 

@@ -1,6 +1,5 @@
 import tensorflow
 
-
 preprocess_seq_length = 128
 preprocess_batch_size = 32
 bert_batch_size = 32
@@ -15,6 +14,7 @@ only_source_tweet = False
 save_bert_model_dir = './saved_models'
 save_bert_model_name = 'res4_bert'
 init_lr = 3e-5
+bert_optimizer = 'sgd'  # sgd, adam
 
 bert_epochs = 1
 bert_dropout_rate = 0.1
