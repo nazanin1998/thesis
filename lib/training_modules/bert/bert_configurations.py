@@ -18,7 +18,7 @@ init_lr = 3e-5
 
 bert_epochs = 1
 bert_dropout_rate = 0.1
-shuffle_data_splitting = True
+shuffle_data_splitting = False
 
 bert_test_size = 0.2
 bert_train_size = 0.75
