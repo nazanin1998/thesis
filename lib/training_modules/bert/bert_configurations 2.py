@@ -12,14 +12,14 @@ r"""
 preprocess_ignore_exc_str = True
 only_source_tweet = False
 save_bert_model_dir = './saved_models'
-save_bert_model_name = 'res7_bert'
+save_bert_model_name = 'res6_bert'
 init_lr = 3e-5
-bert_optimizer = 'adam'  # sgd, adam, adamax, adadelta, adagrad
+bert_optimizer = 'adamax'  # sgd, adam, adamax, adadelta, adagrad
 
 bert_epochs = 1
 bert_dropout_rate = 0.1
 shuffle_data_splitting = False
 
 bert_test_size = 0.2
-bert_train_size = 0.7
-bert_val_size = 0.1
+bert_train_size = 0.75
+bert_val_size = 0.05
