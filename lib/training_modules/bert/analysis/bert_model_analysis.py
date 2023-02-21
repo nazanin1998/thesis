@@ -56,7 +56,7 @@ class BertModelAnalysis:
 
         train_loss = history_dict['loss']
         validation_loss = history_dict['val_loss']
-        train_acc = history_dict['binary_accuracy']
-        validation_acc = history_dict['val_binary_accuracy']
+        train_acc = history_dict['accuracy']
+        validation_acc = history_dict['val_accuracy']
 
         return train_loss, validation_loss, train_acc, validation_acc

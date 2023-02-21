@@ -77,7 +77,6 @@ class BertPreprocessLayerMaker:
         for name, input_item in inputs.items():
             if name not in str_feature_names:
                 continue
-            print(f"do preprocess layer for => {name} , input ={input_item}")
             # if bert_preprocess_do_vectorization:
             #     r"""first approach"""
             #     lookup = tf.keras.layers.StringLookup(vocabulary=np.unique(df[name]))
