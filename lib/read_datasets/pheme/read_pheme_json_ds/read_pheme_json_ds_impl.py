@@ -1,3 +1,4 @@
+from sklearn.model_selection import train_test_split
 from tabulate import tabulate
 
 from lib.read_datasets.pheme.read_pheme_json_ds.read_pheme_json_ds import ReadPhemeJsonDS
@@ -6,24 +7,28 @@ import pandas as pd
 
 import lib.constants as constants
 from lib.models.event_model import EventModel
-from lib.models.tweet import Tweet
-from lib.models.tweet_tree import TweetTree
-from lib.read_datasets.pheme.file_dir_handler import FileDirHandler
-from lib.training_modules.bert.bert_configurations import only_source_tweet
+from lib.models.tweet_model import TweetModel
+from lib.models.tweet_tree_model import TweetTreeModel
+from lib.utils.file_dir_handler import FileDirHandler
+from lib.training_modules.bert.bert_configurations import PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_TEST_SIZE, \
+    PREPROCESS_TRAIN_SIZE, PREPROCESS_VAL_SIZE, PREPROCESS_DO_SHUFFLING
 
 
 class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
     def __init__(self):
         self.df = None
+        self.train_df = None
+        self.test_df = None
+        self.val_df = None
         self.events = None
-        self.directory = constants.PHEME_DIR
+        self.directory = constants.PHEME_JSON_DIR
 
     def read_and_save_csv(self):
-        print(f"\tRead PHEME dataset (.json) ... directory => {constants.PHEME_DIR}")
+        print(f"\tRead PHEME dataset (.json) ... directory => {constants.PHEME_JSON_DIR}")
         self.events = self.__extract_events_from_json_dataset()
         self.__extract_csv_from_events()
         self.print_summery()
-        return self.df
+        return self.train_df, self.val_df, self.test_df
 
     def print_summery(self):
         index = 0
@@ -79,7 +84,7 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
             tweet_tree_path = tweet_tree_dir + '/' + tweet_tree_id
 
             source_tweet_path = tweet_tree_path + '/source-tweets/' + tweet_tree_id + '.json'
-            source_tweet_obj = Tweet.tweet_file_to_obj(path=source_tweet_path)
+            source_tweet_obj = TweetModel.tweet_file_to_obj(path=source_tweet_path)
 
             reaction_dir = tweet_tree_path + '/reactions/'
             reaction_ids = FileDirHandler.read_directories(reaction_dir)
@@ -89,42 +94,81 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
                 for reaction_id in reaction_ids:
                     reaction_path = reaction_dir + reaction_id
 
-                    reactions.append(Tweet.tweet_file_to_obj(path=reaction_path))
+                    reactions.append(TweetModel.tweet_file_to_obj(path=reaction_path))
 
-            tweet_trees.append(TweetTree(source_tweet=source_tweet_obj, reactions=reactions))
+            tweet_trees.append(TweetTreeModel(source_tweet=source_tweet_obj, reactions=reactions))
 
         return tweet_trees
+
+    @staticmethod
+    def train_val_test_split(x, y, train_size, val_size, test_size):
+
+        x_train, x_test_val, y_train, y_test_val = train_test_split(x, y, train_size=train_size,
+                                                                    shuffle=PREPROCESS_DO_SHUFFLING,
+                                                                    stratify=None)
+
+        relative_val_size = val_size / (val_size + test_size)
+        x_val, x_test, y_val, y_test = train_test_split(x_test_val, y_test_val,
+                                                        train_size=relative_val_size,
+                                                        test_size=1 - relative_val_size,
+                                                        shuffle=True)
+        return x_train, x_val, x_test, y_train, y_val, y_test
 
     def __extract_csv_from_events(self):
         tweets = self.__extract_tweet_list_from_events()
         self.df = pd.DataFrame(tweets)
+        x = self.df[:]
+        y = x.pop(constants.PHEME_LABEL_COL_NAME)
+
+        x_train, x_val, x_test, y_train, y_val, y_test = self.train_val_test_split(
+            x=x,
+            y=y,
+            test_size=PREPROCESS_TEST_SIZE,
+            train_size=PREPROCESS_TRAIN_SIZE,
+            val_size=PREPROCESS_VAL_SIZE)
+
+        self.train_df = x_train[:]
+        self.val_df = x_val[:]
+        self.test_df = x_test[:]
+
+        self.train_df = self.train_df.join(y_train)
+        self.val_df = self.val_df.join(y_val)
+        self.test_df = self.test_df.join(y_test)
 
         os.makedirs(constants.PHEME_CSV_DIR, exist_ok=True)
-        if only_source_tweet:
+        if PREPROCESS_ONLY_SOURCE_TWEET:
             self.df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
+            # self.train_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
+            # self.val_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
+            # self.test_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
         else:
-            self.df.to_csv(constants.PHEME_CSV_PATH, index=False)
+            self.df.to_csv(constants.PHEME_TRAIN_CSV_PATH, index=False)
+            self.train_df.to_csv(constants.PHEME_TRAIN_CSV_PATH, index=False)
+            self.val_df.to_csv(constants.PHEME_VAL_CSV_PATH, index=False)
+            self.test_df.to_csv(constants.PHEME_TEST_CSV_PATH, index=False)
 
     def __extract_tweet_list_from_events(self):
         tweets = []
         for event in self.events:
 
             for rumour in event.rumors:
-                if only_source_tweet and rumour.source_tweet is not None:
+                if PREPROCESS_ONLY_SOURCE_TWEET and rumour.source_tweet is not None:
                     tweets.append(
                         rumour.source_tweet.to_json(is_rumour=0, event=event.name, is_source_tweet=0, reaction_text=''))
-                if not only_source_tweet:
+                if not PREPROCESS_ONLY_SOURCE_TWEET:
                     for reaction in rumour.reactions:
                         tweets.append(
-                            reaction.to_json(is_rumour=0, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
+                            reaction.to_json(is_rumour=0, event=event.name, is_source_tweet=1,
+                                             reaction_text=reaction.text))
 
             for non_rumour in event.non_rumors:
-                if only_source_tweet and non_rumour.source_tweet is not None:
+                if PREPROCESS_ONLY_SOURCE_TWEET and non_rumour.source_tweet is not None:
                     tweets.append(non_rumour.source_tweet.to_json(is_rumour=1, event=event.name, is_source_tweet=0,
                                                                   reaction_text=''))
-                if not only_source_tweet:
+                if not PREPROCESS_ONLY_SOURCE_TWEET:
                     for reaction in non_rumour.reactions:
                         tweets.append(
-                            reaction.to_json(is_rumour=1, event=event.name, is_source_tweet=1, reaction_text=reaction.text))
+                            reaction.to_json(is_rumour=1, event=event.name, is_source_tweet=1,
+                                             reaction_text=reaction.text))
 
         return tweets

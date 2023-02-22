@@ -1,4 +1,4 @@
-from lib.training_modules.bert.bert_configurations import preprocess_seq_length
+from lib.training_modules.bert.bert_configurations import PREPROCESS_SEQ_LEN
 import tensorflow_hub as hub
 import tensorflow as tf
 
@@ -11,7 +11,7 @@ class BertPreprocessModelMaker:
             inputs,
             bert_pack):
         packer = hub.KerasLayer(bert_pack,
-                                arguments=dict(seq_length=preprocess_seq_length),
+                                arguments=dict(seq_length=PREPROCESS_SEQ_LEN),
                                 name='packer')
 
         preprocessed_result = packer(preprocess_layers)

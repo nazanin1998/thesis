@@ -1,4 +1,4 @@
-from lib.training_modules.bert.bert_configurations import preprocess_ignore_exc_str
+from lib.training_modules.bert.bert_configurations import PREPROCESS_IGNORE_EXC_STR
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
@@ -13,13 +13,13 @@ class BertPreprocessLayerMaker:
             numeric_feature_names,
             str_feature_names,
             bert_preprocess,
-            df
+            x_train
     ):
         preprocess_layers = []
-        if not preprocess_ignore_exc_str:
+        if not PREPROCESS_IGNORE_EXC_STR:
             preprocess_layers = self.__make_numeric_feature_preprocess_layer(
                 numeric_feature_names=numeric_feature_names,
-                numeric_features=df[numeric_feature_names],
+                numeric_features=x_train[numeric_feature_names],
                 inputs=inputs)
             preprocess_layers = self.__make_binary_feature_preprocess_layer(
                 preprocess_layers=preprocess_layers,
@@ -31,7 +31,7 @@ class BertPreprocessLayerMaker:
             preprocess_layers=preprocess_layers,
             str_feature_names=str_feature_names,
             bert_preprocess=bert_preprocess,
-            df=df)
+            x_train=x_train)
         return preprocess_layers
 
     def __make_binary_feature_preprocess_layer(
@@ -71,7 +71,7 @@ class BertPreprocessLayerMaker:
             preprocess_layers,
             str_feature_names,
             bert_preprocess,
-            df
+            x_train
     ):
 
         for name, input_item in inputs.items():
@@ -90,7 +90,7 @@ class BertPreprocessLayerMaker:
             r"""second approach"""
             # text_vectorizer = tf.keras.layers.TextVectorization()
             #
-            # text_vectorizer.adapt(df[name])
+            # text_vectorizer.adapt(x_train[name])
             # preprocessed_item = text_vectorizer(input_item)
             # preprocessed_item = tf.cast(preprocessed_item, dtype=tf.float32, name=f"vectorization_{name}")
 

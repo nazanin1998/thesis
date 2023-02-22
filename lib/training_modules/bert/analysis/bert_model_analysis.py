@@ -1,7 +1,7 @@
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-from lib.training_modules.bert.bert_configurations import bert_epochs
+from lib.training_modules.bert.bert_configurations import BERT_EPOCHS
 from lib.utils.log.logger import log_phase_desc
 
 
@@ -24,16 +24,16 @@ class BertModelAnalysis:
         plt.subplot(2, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
-        plt.plot(bert_epochs, loss, 'r', label='Training loss')
-        plt.plot(bert_epochs, val_loss, 'b', label='Validation loss')
+        plt.plot(BERT_EPOCHS, loss, 'r', label='Training loss')
+        plt.plot(BERT_EPOCHS, val_loss, 'b', label='Validation loss')
         plt.title('Training and validation loss')
         # plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
 
         plt.subplot(2, 1, 2)
-        plt.plot(bert_epochs, acc, 'r', label='Training acc')
-        plt.plot(bert_epochs, val_acc, 'b', label='Validation acc')
+        plt.plot(BERT_EPOCHS, acc, 'r', label='Training acc')
+        plt.plot(BERT_EPOCHS, val_acc, 'b', label='Validation acc')
         plt.title('Training and validation accuracy')
         plt.xlabel('Epochs')
         plt.ylabel('Accuracy')

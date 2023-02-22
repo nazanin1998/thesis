@@ -1,9 +1,9 @@
 import os
 
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
-from lib.training_modules.bert.bert_configurations import bert_dropout_rate, bert_batch_size, \
-    bert_epochs, save_bert_model_dir, init_lr, save_bert_model_name, preprocess_seq_length, preprocess_batch_size, \
-    preprocess_buffer_size, only_source_tweet, shuffle_data_splitting, bert_optimizer
+from lib.training_modules.bert.bert_configurations import BERT_DROPOUT_RATE, BERT_BATCH_SIZE, \
+    BERT_EPOCHS, BERT_SAVE_MODEL_DIR, BERT_LEARNING_RATE, BERT_SAVE_MODEL_NAME, PREPROCESS_SEQ_LEN, PREPROCESS_BATCH_SIZE, \
+    PREPROCESS_BUFFER_SIZE, PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_DO_SHUFFLING, BERT_OPTIMIZER_NAME
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
 import tensorflow as tf
@@ -41,9 +41,9 @@ class BertModelImpl(MyBertModel):
         self.__metrics = tf.keras.metrics.SparseCategoricalAccuracy(
             'accuracy', dtype=tf.float32)
 
-        self.__steps_per_epoch = self.__train_len // bert_batch_size
-        self.__validation_steps = self.__validation_len // bert_batch_size
-        self.__num_train_steps = self.__steps_per_epoch * bert_epochs
+        self.__steps_per_epoch = self.__train_len // BERT_BATCH_SIZE
+        self.__validation_steps = self.__validation_len // BERT_BATCH_SIZE
+        self.__num_train_steps = self.__steps_per_epoch * BERT_EPOCHS
         self.__num_warmup_steps = self.__num_train_steps // 10
 
     @staticmethod
@@ -54,25 +54,25 @@ class BertModelImpl(MyBertModel):
         #     num_warmup_steps=num_warmup_steps,
         #     optimizer_type='adamw')
 
-        if bert_optimizer == 'adam':
-            return tf.keras.optimizers.Adam(learning_rate=init_lr)
-        elif bert_optimizer == "sgd":
-            return tf.keras.optimizers.SGD(learning_rate=init_lr)
-        elif bert_optimizer == "adamax":
-            return tf.keras.optimizers.Adamax(learning_rate=init_lr)
-        elif bert_optimizer == "adadelta":
-            return tf.keras.optimizers.Adadelta(learning_rate=init_lr)
-        elif bert_optimizer == "adagrad":
-            return tf.keras.optimizers.Adagrad(learning_rate=init_lr)
+        if BERT_OPTIMIZER_NAME == 'adam':
+            return tf.keras.optimizers.Adam(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "sgd":
+            return tf.keras.optimizers.SGD(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adamax":
+            return tf.keras.optimizers.Adamax(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adadelta":
+            return tf.keras.optimizers.Adadelta(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adagrad":
+            return tf.keras.optimizers.Adagrad(learning_rate=BERT_LEARNING_RATE)
 
 
     def __fit_model(self, model):
         history = model.fit(
             x=self.__train_tensor_dataset,
-            batch_size=bert_batch_size,
+            batch_size=BERT_BATCH_SIZE,
             validation_data=self.__val_tensor_dataset,
             steps_per_epoch=self.__steps_per_epoch,
-            epochs=bert_epochs,
+            epochs=BERT_EPOCHS,
             validation_steps=self.__validation_steps,
         )
         return history
@@ -80,16 +80,16 @@ class BertModelImpl(MyBertModel):
     def start(self):
         log_start_phase(3, 'BERT MODEL STARTED')
         log_phase_desc(f'BERT Model               : {self.bert_model_name}')
-        log_phase_desc(f'Preprocess sequence len  : {preprocess_seq_length}')
-        log_phase_desc(f'Preprocess batch size    : {preprocess_batch_size}')
-        log_phase_desc(f'Preprocess buffer size   : {preprocess_buffer_size}')
-        log_phase_desc(f'Do shuffle on splitting  : {shuffle_data_splitting}')
-        log_phase_desc(f'Bert batch size          : {bert_batch_size}')
-        log_phase_desc(f'Bert epochs              : {bert_epochs}')
-        log_phase_desc(f'Bert dropout rate        : {bert_dropout_rate}')
-        log_phase_desc(f'Bert learning rate       : {init_lr}')
-        log_phase_desc(f'Bert optimizer           : {bert_optimizer}')
-        log_phase_desc(f'Assume only source tweets: {only_source_tweet}')
+        log_phase_desc(f'Preprocess sequence len  : {PREPROCESS_SEQ_LEN}')
+        log_phase_desc(f'Preprocess batch size    : {PREPROCESS_BATCH_SIZE}')
+        log_phase_desc(f'Preprocess buffer size   : {PREPROCESS_BUFFER_SIZE}')
+        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
+        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
+        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS}')
+        log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
+        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
+        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
+        log_phase_desc(f'Assume only source tweets: {PREPROCESS_ONLY_SOURCE_TWEET}')
 
         classifier_model = self.build_classifier_model(self.__num_classes)
 
@@ -119,7 +119,7 @@ class BertModelImpl(MyBertModel):
 
     @staticmethod
     def get_save_model_path():
-        return os.path.join(save_bert_model_dir, save_bert_model_name)
+        return os.path.join(BERT_SAVE_MODEL_DIR, BERT_SAVE_MODEL_NAME)
 
     def save_model(self, classifier_model):
         saved_model_path = self.get_save_model_path()
@@ -137,7 +137,7 @@ class BertModelImpl(MyBertModel):
             def __init__(self, num_classes):
                 super(Classifier, self).__init__(name="prediction")
                 self.encoder = hub.KerasLayer(self_out.bert_model_name, trainable=True)
-                self.dropout = tf.keras.layers.Dropout(bert_dropout_rate)
+                self.dropout = tf.keras.layers.Dropout(BERT_DROPOUT_RATE)
                 self.dense = tf.keras.layers.Dense(num_classes)
 
             def call(self, preprocessed_text):

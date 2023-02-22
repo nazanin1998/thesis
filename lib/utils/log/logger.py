@@ -20,7 +20,7 @@ def log_end_phase(phase_num, description):
 
 
 def log_phase_desc(description):
-    print(f"\t{description} @ {datetime.now()}")
+    print(f"\t{description}")
 
 
 def print_indented(n, s):

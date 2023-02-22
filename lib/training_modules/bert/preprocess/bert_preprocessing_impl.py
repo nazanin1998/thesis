@@ -9,7 +9,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
 
-from lib.training_modules.bert.bert_configurations import preprocess_batch_size, preprocess_buffer_size
+from lib.training_modules.bert.bert_configurations import PREPROCESS_BATCH_SIZE, PREPROCESS_BUFFER_SIZE
 from lib.training_modules.bert.preprocess.bert_preprocess_ds_statistics import BertPreprocessDsStatistics
 from lib.utils.log.logger import log_start_phase, log_end_phase, log_line
 
@@ -24,14 +24,14 @@ class BertPreprocessingImpl(BertPreprocessing):
 
         self.bert_preprocess_model_name = get_bert_preprocess_model_name(bert_model_name=bert_model_name)
 
-    def start(self, df):
+    def start(self, train_df, val_df, test_df):
         log_start_phase(2, 'BERT PREPROCESSING')
 
         label_classes, x_train_tensor, x_val_tensor, x_test_tensor, y_train_tensor, y_val_tensor, y_test_tensor = \
-            BertPreprocessDsStatistics().get_train_val_test_tensors(df=df)
+            BertPreprocessDsStatistics().get_train_val_test_tensors(train_df, val_df, test_df)
 
         inputs = BertPreprocessInputMaker.make_input_for_all_ds_columns(
-            df,
+            x_train_tensor,
             self.str_feature_names,
             self.categorical_feature_names,
             self.binary_feature_names,
@@ -45,7 +45,7 @@ class BertPreprocessingImpl(BertPreprocessing):
             self.numeric_feature_names,
             self.str_feature_names,
             bert_preprocess,
-            df)
+            x_train_tensor)
 
         bert_pack = self.__get_bert_pack_model(bert_preprocess)
 
@@ -143,6 +143,6 @@ class BertPreprocessingImpl(BertPreprocessing):
         if is_training:
             dataset = dataset.shuffle(num_examples)
             dataset = dataset.repeat()
-        dataset = dataset.batch(preprocess_batch_size)
-        dataset = dataset.cache().prefetch(buffer_size=preprocess_buffer_size)
+        dataset = dataset.batch(PREPROCESS_BATCH_SIZE)
+        dataset = dataset.cache().prefetch(buffer_size=PREPROCESS_BUFFER_SIZE)
         return dataset

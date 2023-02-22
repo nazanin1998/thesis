@@ -26,7 +26,7 @@ from lib.models.user_model import UserModel
 from lib.utils.file_dir_handler import FileDirHandler
 
 
-class ReactionCsvModel:
+class TweetModel:
     def to_json(self, is_rumour, event, is_source_tweet, reaction_text):
         user = self.user
         text = self.text
@@ -125,12 +125,12 @@ class ReactionCsvModel:
         symbols = entities['symbols']
         hashtags = numpy.NaN
         try:
-            hashtags = Tweet.__extract_hashtag_str(hashtag_list=entities['hashtags'])
+            hashtags = TweetModel.__extract_hashtag_str(hashtag_list=entities['hashtags'])
         except:
             pass
         media = numpy.NaN
         try:
-            media = Tweet.__extract_media_str(media_list=entities['media'])
+            media = TweetModel.__extract_media_str(media_list=entities['media'])
         except:
             pass
         user_mentions = entities['user_mentions']
@@ -143,14 +143,14 @@ class ReactionCsvModel:
         in_reply_to_user_id = js_obj['in_reply_to_user_id']
         in_reply_to_status_id = js_obj['in_reply_to_status_id']
 
-        return Tweet(id=id, symbols=symbols, user_mentions=user_mentions, hashtags=hashtags, urls=urls, text=text,
-                     source=source, truncated=truncated,
-                     user=user, favorited=favorited,
-                     retweeted=retweeted,
-                     media=media,
-                     created_at=created_at, retweet_count=retweet_count, contributors=contributors,
-                     favorite_count=favorite_count, in_reply_to_user_id=in_reply_to_user_id,
-                     in_reply_to_status_id=in_reply_to_status_id)
+        return TweetModel(id=id, symbols=symbols, user_mentions=user_mentions, hashtags=hashtags, urls=urls, text=text,
+                          source=source, truncated=truncated,
+                          user=user, favorited=favorited,
+                          retweeted=retweeted,
+                          media=media,
+                          created_at=created_at, retweet_count=retweet_count, contributors=contributors,
+                          favorite_count=favorite_count, in_reply_to_user_id=in_reply_to_user_id,
+                          in_reply_to_status_id=in_reply_to_status_id)
 
     @staticmethod
     def __extract_media_str(media_list):
@@ -189,7 +189,7 @@ class ReactionCsvModel:
         tweet_json_obj = FileDirHandler.read_json_file(path=path)
         if tweet_json_obj is None:
             return None
-        return Tweet.from_json(tweet_json_obj)
+        return TweetModel.from_json(tweet_json_obj)
     #
     # {
     #   "contributors": null,

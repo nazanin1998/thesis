@@ -1,16 +1,18 @@
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
-from lib.training_modules.bert.bert_configurations import bert_test_size, bert_train_size, bert_val_size, \
-    preprocess_ignore_exc_str, only_source_tweet, shuffle_data_splitting
-from lib.utils.log.logger import log_phase_desc
+from lib.constants import PHEME_LABEL_COL_NAME
+from lib.training_modules.bert.bert_configurations import PREPROCESS_TEST_SIZE, PREPROCESS_TRAIN_SIZE, \
+    PREPROCESS_VAL_SIZE, \
+    PREPROCESS_IGNORE_EXC_STR, PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_DO_SHUFFLING
+from lib.utils.log.logger import log_phase_desc, print_indented_key_value
 
 
 class BertPreprocessDsStatistics:
 
     def __init__(self):
         self.__categorical_feature_names = ['event']
-        if only_source_tweet:
+        if PREPROCESS_ONLY_SOURCE_TWEET:
             self.__str_feature_names = ['text']
         else:
             self.__str_feature_names = ['text', "reaction_text"]
@@ -23,10 +25,10 @@ class BertPreprocessDsStatistics:
                                         'user.favourites_count', 'user.followers_count', 'user.follow_request_sent', ]
 
         self.__training_features_name = self.__str_feature_names + self.__binary_feature_names + self.__categorical_feature_names + self.__numeric_feature_names
-        if preprocess_ignore_exc_str:
+        if PREPROCESS_IGNORE_EXC_STR:
             self.__training_features_name = self.__str_feature_names
 
-        self.__label_feature_name = 'is_rumour'
+        self.__label_feature_name = PHEME_LABEL_COL_NAME
 
     def get_categorical_binary_numeric_string_feature_names(self):
         return self.__label_feature_name, self.__categorical_feature_names, self.__binary_feature_names, \
@@ -42,26 +44,21 @@ class BertPreprocessDsStatistics:
 
     def get_train_val_test_tensors(
             self,
-            df
+            train_df, val_df, test_df
     ):
-        x = df[self.__training_features_name]
+        # x = df[self.__training_features_name]
+        #
+        # y = df[self.__label_feature_name]
+        x_train_tensor = train_df[self.__training_features_name]
+        x_val_tensor = val_df[self.__training_features_name]
+        x_test_tensor = test_df[self.__training_features_name]
 
-        y = df[self.__label_feature_name]
+        y_train_tensor = train_df[self.__label_feature_name]
+        y_val_tensor = val_df[self.__label_feature_name]
+        y_test_tensor = test_df[self.__label_feature_name]
 
-        label_classes = len(y.value_counts())
+        label_classes = len(y_train_tensor.value_counts())
 
-        x_train, x_val, x_test, y_train, y_val, y_test = self.train_val_test_split(
-            x=x,
-            y=y,
-            test_size=bert_test_size,
-            train_size=bert_train_size,
-            val_size=bert_val_size)
-        x_train_tensor = x_train
-        x_val_tensor = x_val
-        x_test_tensor = x_test
-        y_train_tensor = y_train
-        y_val_tensor = y_val
-        y_test_tensor = y_test
         # x_train_tensor = self.__convert_to_tensor(x_train, dtype=tf.string)
         # x_val_tensor = self.__convert_to_tensor(x_val, dtype=tf.string)
         # x_test_tensor = self.__convert_to_tensor(x_test, dtype=tf.string)
@@ -69,23 +66,24 @@ class BertPreprocessDsStatistics:
         # y_val_tensor = self.__convert_to_tensor(y_val, dtype=tf.int64)
         # y_test_tensor = self.__convert_to_tensor(y_test, dtype=tf.int64)
 
-        self.print_ds_statistics(df, label_classes, x_train_tensor, x_val_tensor, x_test_tensor)
+        self.print_ds_statistics(y_train_tensor, y_val_tensor, y_test_tensor, label_classes, x_train_tensor,
+                                 x_val_tensor, x_test_tensor)
 
         return label_classes, x_train_tensor, x_val_tensor, x_test_tensor, y_train_tensor, y_val_tensor, y_test_tensor
 
-    @staticmethod
-    def train_val_test_split(x, y, train_size, val_size, test_size):
-        x_train_val, x_test, y_train_val, y_test = train_test_split(x, y, test_size=test_size,
-                                                                    shuffle=shuffle_data_splitting,
-                                                                    stratify=None)
-
-        relative_train_size = train_size / (val_size + train_size)
-        x_train, x_val, y_train, y_val = train_test_split(x_train_val, y_train_val,
-                                                          train_size=relative_train_size,
-                                                          test_size=1 - relative_train_size,
-                                                          shuffle=shuffle_data_splitting,
-                                                          stratify=None)
-        return x_train, x_val, x_test, y_train, y_val, y_test
+    # @staticmethod
+    # def train_val_test_split(x, y, train_size, val_size, test_size):
+    #     x_train_val, x_test, y_train_val, y_test = train_test_split(x, y, test_size=test_size,
+    #                                                                 shuffle=PREPROCESS_DO_SHUFFLING,
+    #                                                                 stratify=None)
+    #
+    #     relative_train_size = train_size / (val_size + train_size)
+    #     x_train, x_val, y_train, y_val = train_test_split(x_train_val, y_train_val,
+    #                                                       train_size=relative_train_size,
+    #                                                       test_size=1 - relative_train_size,
+    #                                                       shuffle=PREPROCESS_DO_SHUFFLING,
+    #                                                       stratify=None)
+    #     return x_train, x_val, x_test, y_train, y_val, y_test
 
     @staticmethod
     def __convert_to_tensor(
@@ -95,16 +93,20 @@ class BertPreprocessDsStatistics:
 
     def print_ds_statistics(
             self,
-            df,
+            y_train_tensor,
+            y_val_tensor,
+            y_test_tensor,
             label_classes,
             x_train_tensor,
             x_val_tensor,
-            x_test_tensor,
+            x_test_tensor
     ):
-        log_phase_desc(f'PHEME DS (SIZE)   : {self.__get_ds_size(df)}')
         log_phase_desc(f'LABEL CLASSES     : {label_classes}')
         log_phase_desc(f'TRAINING FEATURE  : {self.__training_features_name}')
         log_phase_desc(f'LABEL FEATURE     : {self.__label_feature_name}\n')
-        log_phase_desc(f'TRAIN      (SIZE) : {x_train_tensor.shape} ({bert_train_size * 100}%)')
-        log_phase_desc(f'VALIDATION (SIZE) : {x_val_tensor.shape} ({bert_val_size * 100}%)')
-        log_phase_desc(f'TEST       (SIZE) : {x_test_tensor.shape} ({bert_test_size * 100}%)')
+        log_phase_desc(f'TRAIN      (SIZE) : {x_train_tensor.shape} ({PREPROCESS_TRAIN_SIZE * 100}%)')
+        log_phase_desc(f'VALIDATION (SIZE) : {x_val_tensor.shape} ({PREPROCESS_VAL_SIZE * 100}%)')
+        log_phase_desc(f'TEST       (SIZE) : {x_test_tensor.shape} ({PREPROCESS_TEST_SIZE * 100}%)')
+        print_indented_key_value(f'\tYTrain classes\t  : ', f'{y_train_tensor.value_counts()}', intend_num=6)
+        print_indented_key_value(f'\tYVal classes\t  : ', f'{y_val_tensor.value_counts()}', intend_num=6)
+        print_indented_key_value(f'\tYTest classes\t  : ', f'{y_test_tensor.value_counts()}', intend_num=6)

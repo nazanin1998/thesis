@@ -1,25 +1,24 @@
 import tensorflow
 
-preprocess_seq_length = 128
-preprocess_batch_size = 32
-bert_batch_size = 32
-preprocess_buffer_size = tensorflow.data.AUTOTUNE
+PREPROCESS_SEQ_LEN = 128
+PREPROCESS_BATCH_SIZE = 32
+PREPROCESS_BUFFER_SIZE = tensorflow.data.AUTOTUNE
 
-r"""
-    In preprocessing we need to make input for each column of ds.
-    By this parameter we are able to just consider text columns as input for bert.
-    """
-preprocess_ignore_exc_str = True
-only_source_tweet = False
-save_bert_model_dir = './saved_models'
-save_bert_model_name = 'res7_bert'
-init_lr = 3e-5
-bert_optimizer = 'adam'  # sgd, adam, adamax, adadelta, adagrad
+PREPROCESS_DO_SHUFFLING = False
 
-bert_epochs = 1
-bert_dropout_rate = 0.1
-shuffle_data_splitting = False
+PREPROCESS_IGNORE_EXC_STR = True
 
-bert_test_size = 0.2
-bert_train_size = 0.7
-bert_val_size = 0.1
+PREPROCESS_ONLY_SOURCE_TWEET = False
+
+PREPROCESS_TEST_SIZE = 0.1
+PREPROCESS_TRAIN_SIZE = 0.8
+PREPROCESS_VAL_SIZE = 0.1
+
+
+BERT_EPOCHS = 1
+BERT_BATCH_SIZE = 32
+BERT_DROPOUT_RATE = 0.1
+BERT_LEARNING_RATE = 3e-5
+BERT_OPTIMIZER_NAME = 'adam'  # sgd, adam, adamax, adadelta, adagrad
+BERT_SAVE_MODEL_NAME = 'res7_bert'
+BERT_SAVE_MODEL_DIR = './saved_models'

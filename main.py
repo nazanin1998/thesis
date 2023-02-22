@@ -16,9 +16,9 @@ r"""
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-df = read_pheme_ds()
+train_df, val_df, test_df = read_pheme_ds()
 train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
-bert_preprocess_model = BertPreprocessingImpl().start(df=df)
+bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
 
 BertModelImpl(train_tensor_dataset=train_tensor_dataset,
               val_tensor_dataset=val_tensor_dataset,

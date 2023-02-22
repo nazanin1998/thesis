@@ -3,7 +3,7 @@ from abc import ABC
 
 class BertPreprocessing(ABC):
 
-    def start(self, df):
+    def start(self, train_df, val_df, test_df):
         pass
 
     def make_preprocess_model(
