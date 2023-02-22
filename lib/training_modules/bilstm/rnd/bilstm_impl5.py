@@ -1,15 +1,9 @@
-from random import random
-
 import numpy as np
 from keras import Sequential
-from keras.datasets import imdb
-from keras.layers import Embedding, Bidirectional, LSTM, Dropout, Dense
+from keras.layers import Embedding, Bidirectional, LSTM, Dense
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
-from keras_preprocessing import sequence
 from numpy import array
-from pandas import DataFrame
-from matplotlib import pyplot
 
 from lib.training_modules.bilstm.bilstm import BiLstm
 

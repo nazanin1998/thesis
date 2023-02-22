@@ -10,8 +10,8 @@ from lib.models.event_model import EventModel
 from lib.models.tweet_model import TweetModel
 from lib.models.tweet_tree_model import TweetTreeModel
 from lib.utils.file_dir_handler import FileDirHandler
-from lib.training_modules.bert.bert_configurations import PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_TEST_SIZE, \
-    PREPROCESS_TRAIN_SIZE, PREPROCESS_VAL_SIZE, PREPROCESS_DO_SHUFFLING
+from lib.training_modules.bert.bert_configurations import PREPROCESS_ONLY_SOURCE_TWEET, BERT_TEST_SIZE, \
+    BERT_TRAIN_SIZE, BERT_VAL_SIZE, PREPROCESS_DO_SHUFFLING
 
 
 class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
@@ -123,9 +123,9 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
         x_train, x_val, x_test, y_train, y_val, y_test = self.train_val_test_split(
             x=x,
             y=y,
-            test_size=PREPROCESS_TEST_SIZE,
-            train_size=PREPROCESS_TRAIN_SIZE,
-            val_size=PREPROCESS_VAL_SIZE)
+            test_size=BERT_TEST_SIZE,
+            train_size=BERT_TRAIN_SIZE,
+            val_size=BERT_VAL_SIZE)
 
         self.train_df = x_train[:]
         self.val_df = x_val[:]

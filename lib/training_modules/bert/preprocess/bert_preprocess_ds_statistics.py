@@ -2,8 +2,8 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 from lib.constants import PHEME_LABEL_COL_NAME
-from lib.training_modules.bert.bert_configurations import PREPROCESS_TEST_SIZE, PREPROCESS_TRAIN_SIZE, \
-    PREPROCESS_VAL_SIZE, \
+from lib.training_modules.bert.bert_configurations import BERT_TEST_SIZE, BERT_TRAIN_SIZE, \
+    BERT_VAL_SIZE, \
     PREPROCESS_IGNORE_EXC_STR, PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_DO_SHUFFLING
 from lib.utils.log.logger import log_phase_desc, print_indented_key_value
 
@@ -104,9 +104,9 @@ class BertPreprocessDsStatistics:
         log_phase_desc(f'LABEL CLASSES     : {label_classes}')
         log_phase_desc(f'TRAINING FEATURE  : {self.__training_features_name}')
         log_phase_desc(f'LABEL FEATURE     : {self.__label_feature_name}\n')
-        log_phase_desc(f'TRAIN      (SIZE) : {x_train_tensor.shape} ({PREPROCESS_TRAIN_SIZE * 100}%)')
-        log_phase_desc(f'VALIDATION (SIZE) : {x_val_tensor.shape} ({PREPROCESS_VAL_SIZE * 100}%)')
-        log_phase_desc(f'TEST       (SIZE) : {x_test_tensor.shape} ({PREPROCESS_TEST_SIZE * 100}%)')
+        log_phase_desc(f'TRAIN      (SIZE) : {x_train_tensor.shape} ({BERT_TRAIN_SIZE * 100}%)')
+        log_phase_desc(f'VALIDATION (SIZE) : {x_val_tensor.shape} ({BERT_VAL_SIZE * 100}%)')
+        log_phase_desc(f'TEST       (SIZE) : {x_test_tensor.shape} ({BERT_TEST_SIZE * 100}%)')
         print_indented_key_value(f'\tYTrain classes\t  : ', f'{y_train_tensor.value_counts()}', intend_num=6)
         print_indented_key_value(f'\tYVal classes\t  : ', f'{y_val_tensor.value_counts()}', intend_num=6)
         print_indented_key_value(f'\tYTest classes\t  : ', f'{y_test_tensor.value_counts()}', intend_num=6)

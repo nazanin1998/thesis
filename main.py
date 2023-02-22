@@ -1,11 +1,15 @@
-# //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
 from datetime import datetime
 import os
 
+import numpy as np
+import tensorflow as tf
 from lib.read_datasets.pheme.read_pheme_ds import read_pheme_ds
 from lib.training_modules.bert.preprocess.bert_preprocessing_impl import BertPreprocessingImpl
 # from lib.training_modules.bert.reload.bert_model_reload import BertModelReload
 from lib.training_modules.bert.train.bert_model_impl import BertModelImpl
+from lib.training_modules.bilstm.preprocess.bilstm_preprocess import BiLstmPreprocess
+from lib.training_modules.bilstm.rnd.bilstm_impl import do_bi_lstm
+from lib.training_modules.bilstm.train.bilstm_model import BiLstmModelImpl
 
 r"""
     1- Read dataset...
@@ -29,6 +33,24 @@ BertModelImpl(train_tensor_dataset=train_tensor_dataset,
               num_classes=label_classes,
               bert_preprocess_model=bert_preprocess_model).start()
 
+# train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len, bi_lstm_preprocess_model = \
+#     BiLstmPreprocess().start(
+#         train_df, val_df, test_df)
+# BiLstmModelImpl(train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len,
+#                 bi_lstm_preprocess_model, train_df, val_df, test_df).start()
+
+#
+# def __get_x_y_from_df( df):
+#     y = df['text']
+#     x = df['is_rumour']
+#     return x, y
+#
+#
+# x_train, y_train = __get_x_y_from_df(train_df)
+# x_test, y_test = __get_x_y_from_df(test_df)
+# x_val, y_val = __get_x_y_from_df(val_df)
+#
+# do_bi_lstm(x_train, x_test, y_train, y_test)
 # BertModelReload(train_tensor_dataset)
 # bert_test(preprocessed_df)
 #

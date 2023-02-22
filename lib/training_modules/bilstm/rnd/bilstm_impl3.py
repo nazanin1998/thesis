@@ -1,4 +1,3 @@
-import numpy as np
 from keras import layers
 from tensorflow import keras
 
@@ -8,15 +7,10 @@ from tensorflow import keras
 model.compile("adam", "binary_crossentropy", metrics=["accuracy"])
 model.fit(x_train, y_train, batch_size=32, epochs=2, validation_data=(x_val, y_val))
 
-from random import random
-from numpy import array
-from numpy import cumsum
 from matplotlib import pyplot
 from pandas import DataFrame
 from keras.models import Sequential
 from keras.layers import LSTM, Embedding
-from keras.layers import Dense
-from keras.layers import TimeDistributed
 from keras.layers import Bidirectional
 from lib.training_modules.bilstm.bilstm import BiLstm
 

@@ -22,7 +22,8 @@ class BertPreprocessModelMaker:
         self.plot_preprocess_model(preprocessor)
         return preprocessor
 
-    def plot_preprocess_model(self, model, img_name='preprocess_model.png', show_shapes=True):
+    @staticmethod
+    def plot_preprocess_model(model, img_name='preprocess_model.png', show_shapes=True):
         tf.keras.utils.plot_model(model,
                                   rankdir="LR",
                                   # show_shapes=show_shapes,

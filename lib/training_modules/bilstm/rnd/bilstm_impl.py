@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow
 from keras import Sequential
 from keras.datasets import imdb
 from keras.layers import Embedding, Bidirectional, LSTM, Dropout, Dense
@@ -6,7 +7,7 @@ from keras_preprocessing import sequence
 from sklearn.model_selection import train_test_split
 
 from lib.preprocessing.pheme.preprocess_impl import PreProcessImpl
-from lib.training_modules.bilstm.bilstm import BiLstm
+from lib.training_modules.bilstm.rnd.bilstm import BiLstm
 
 
 class BiLstmImpl(BiLstm):
@@ -42,7 +43,7 @@ class BiLstmImpl(BiLstm):
                     activation='sigmoid',
                     batch_size=128,
                     optimizer='adam',
-                    loss='binary_crossentropy',
+                    loss='sparse_categorical_crossentropy',
                     dropout_rate=0.5):
         if x_train is None:
             x_train, y_train, x_test, y_test = self.get_dataset_value(num_words=input_emb_dim, max_len=max_len)
@@ -75,16 +76,16 @@ class BiLstmImpl(BiLstm):
                           output_emb_dim=128,
                           output_dim=64,
                           activation='sigmoid',
-                          loss='binary_crossentropy',
+                          loss='sparse_categorical_crossentropy',
                           dropout_rate=0.5,
                           optimizer='adam'):
         model = Sequential()
-        model.add(Embedding(input_dim=input_emb_dim, output_dim=output_emb_dim, input_length=max_len))
+        # model.add(tensorflow.keras.layers.TextVectorization())
         model.add(Bidirectional(LSTM(output_dim), merge_mode=mode))
         model.add(Dropout(dropout_rate))
         model.add(Dense(1, activation=activation))
         model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
-        model.summary()
+        # model.summary()
 
         return model
 
@@ -117,7 +118,7 @@ class BiLstmImpl(BiLstm):
         raise 'Unimplemented method'
 
 
-def do_bi_lstm(dataframe):
+def do_bi_lstm(x_train, x_test, y_train, y_test):
     bi_lstm = BiLstmImpl()
-    x_train, x_test, y_train, y_test = bi_lstm.data_reshape(df=dataframe)
+    # x_train, x_test, y_train, y_test = bi_lstm.data_reshape(df=dataframe)
     bi_lstm.run_bi_lstm(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test, max_len=64, epoch=1)
