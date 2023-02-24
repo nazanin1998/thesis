@@ -179,7 +179,7 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
 
 
 def get_directory_for_specified_split_size():
-    specified_split_dir = f"/{(BERT_TRAIN_SIZE * 100).__floor__()}_{(BERT_VAL_SIZE * 100).__floor__()}_{(BERT_TEST_SIZE * 100).__floor__()}"
+    specified_split_dir = f"/{round(BERT_TRAIN_SIZE * 100)}_{round(BERT_VAL_SIZE * 100)}_{round(BERT_TEST_SIZE * 100)}"
     return constants.PHEME_CSV_DIR + specified_split_dir
 
 
