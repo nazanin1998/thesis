@@ -135,17 +135,21 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
         self.val_df = self.val_df.join(y_val)
         self.test_df = self.test_df.join(y_test)
 
-        os.makedirs(constants.PHEME_CSV_DIR, exist_ok=True)
+        self.__make_directory_for_specified_split_size()
         if PREPROCESS_ONLY_SOURCE_TWEET:
             self.df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
             # self.train_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
             # self.val_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
             # self.test_df.to_csv(constants.PHEME_CSV_ONLY_TEXT_PATH, index=False)
         else:
-            self.df.to_csv(constants.PHEME_TRAIN_CSV_PATH, index=False)
-            self.train_df.to_csv(constants.PHEME_TRAIN_CSV_PATH, index=False)
-            self.val_df.to_csv(constants.PHEME_VAL_CSV_PATH, index=False)
-            self.test_df.to_csv(constants.PHEME_TEST_CSV_PATH, index=False)
+            # self.df.to_csv(get_val_path_for_specified_split_size(), index=False)
+            self.train_df.to_csv(get_train_path_for_specified_split_size(), index=False)
+            self.val_df.to_csv(get_val_path_for_specified_split_size(), index=False)
+            self.test_df.to_csv(get_test_path_for_specified_split_size(), index=False)
+
+    @staticmethod
+    def __make_directory_for_specified_split_size():
+        os.makedirs(get_directory_for_specified_split_size(), exist_ok=True)
 
     def __extract_tweet_list_from_events(self):
         tweets = []
@@ -172,3 +176,20 @@ class ReadPhemeJsonDSImpl(ReadPhemeJsonDS):
                                              reaction_text=reaction.text))
 
         return tweets
+
+
+def get_directory_for_specified_split_size():
+    specified_split_dir = f"/{(BERT_TRAIN_SIZE * 100).__floor__()}_{(BERT_VAL_SIZE * 100).__floor__()}_{(BERT_TEST_SIZE * 100).__floor__()}"
+    return constants.PHEME_CSV_DIR + specified_split_dir
+
+
+def get_train_path_for_specified_split_size():
+    return get_directory_for_specified_split_size() + "/" + constants.PHEME_TRAIN_CSV_NAME
+
+
+def get_val_path_for_specified_split_size():
+    return get_directory_for_specified_split_size() + "/" + constants.PHEME_VAL_CSV_NAME
+
+
+def get_test_path_for_specified_split_size():
+    return get_directory_for_specified_split_size() + "/" + constants.PHEME_TEST_CSV_NAME

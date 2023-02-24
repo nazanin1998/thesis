@@ -7,9 +7,9 @@ from lib.read_datasets.pheme.read_pheme_ds import read_pheme_ds
 from lib.training_modules.bert.preprocess.bert_preprocessing_impl import BertPreprocessingImpl
 # from lib.training_modules.bert.reload.bert_model_reload import BertModelReload
 from lib.training_modules.bert.train.bert_model_impl import BertModelImpl
-from lib.training_modules.bilstm.preprocess.bilstm_preprocess import BiLstmPreprocess
-from lib.training_modules.bilstm.rnd.bilstm_impl import do_bi_lstm
-from lib.training_modules.bilstm.train.bilstm_model import BiLstmModelImpl
+# from lib.training_modules.bilstm.preprocess.bilstm_preprocess import BiLstmPreprocess
+# from lib.training_modules.bilstm.rnd.bilstm_impl import do_bi_lstm
+# from lib.training_modules.bilstm.train.bilstm_model import BiLstmModelImpl
 
 r"""
     1- Read dataset...
