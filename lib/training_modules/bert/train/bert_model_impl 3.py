@@ -2,9 +2,8 @@ import os
 
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import BERT_DROPOUT_RATE, BERT_BATCH_SIZE, \
-    BERT_EPOCHS, BERT_SAVE_MODEL_DIR, BERT_LEARNING_RATE, BERT_SAVE_MODEL_NAME, PREPROCESS_SEQ_LEN, \
-    PREPROCESS_BATCH_SIZE, \
-    PREPROCESS_BUFFER_SIZE, PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_DO_SHUFFLING, BERT_OPTIMIZER_NAME, BERT_MODEL_NAME
+    BERT_EPOCHS, BERT_SAVE_MODEL_DIR, BERT_LEARNING_RATE, BERT_SAVE_MODEL_NAME, PREPROCESS_SEQ_LEN, PREPROCESS_BATCH_SIZE, \
+    PREPROCESS_BUFFER_SIZE, PREPROCESS_ONLY_SOURCE_TWEET, PREPROCESS_DO_SHUFFLING, BERT_OPTIMIZER_NAME
 from lib.training_modules.bert.bert_model_name import get_bert_model_name
 from lib.training_modules.bert.train.bert_model import MyBertModel
 import tensorflow as tf
@@ -26,7 +25,7 @@ class BertModelImpl(MyBertModel):
                  validation_len,
                  test_len,
                  bert_preprocess_model,
-                 bert_model_name=BERT_MODEL_NAME):
+                 bert_model_name='bert_en_uncased_L-12_H-768_A-12'):
         self.__train_tensor_dataset = train_tensor_dataset
         self.__val_tensor_dataset = val_tensor_dataset
         self.__test_tensor_dataset = test_tensor_dataset

@@ -15,10 +15,11 @@ BERT_TRAIN_SIZE = 0.7
 BERT_VAL_SIZE = 0.15
 
 
-BERT_EPOCHS = 15
+BERT_EPOCHS = 10
 BERT_BATCH_SIZE = 32
 BERT_DROPOUT_RATE = 0.1
 BERT_LEARNING_RATE = 3e-5
 BERT_OPTIMIZER_NAME = 'adam'  # sgd, adam, adamax, adadelta, adagrad
-BERT_SAVE_MODEL_NAME = 'res8_bert'
+BERT_SAVE_MODEL_NAME = 'res9_bert'
 BERT_SAVE_MODEL_DIR = './saved_models'
+BERT_MODEL_NAME = 'small_bert/bert_en_uncased_L-4_H-512_A-8'

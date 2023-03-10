@@ -9,7 +9,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text
 
-from lib.training_modules.bert.bert_configurations import PREPROCESS_BATCH_SIZE, PREPROCESS_BUFFER_SIZE, BERT_MODEL_NAME
+from lib.training_modules.bert.bert_configurations import PREPROCESS_BATCH_SIZE, PREPROCESS_BUFFER_SIZE
 from lib.training_modules.bert.preprocess.bert_preprocess_ds_statistics import BertPreprocessDsStatistics
 from lib.utils.log.logger import log_start_phase, log_end_phase, log_line
 
@@ -17,7 +17,7 @@ from lib.utils.log.logger import log_start_phase, log_end_phase, log_line
 class BertPreprocessingImpl(BertPreprocessing):
     def __init__(
             self,
-            bert_model_name=BERT_MODEL_NAME):
+            bert_model_name='bert_en_uncased_L-12_H-768_A-12'):
         self.label_feature_name, self.categorical_feature_names, self.binary_feature_names, self.numeric_feature_names, \
         self.str_feature_names = \
             BertPreprocessDsStatistics().get_categorical_binary_numeric_string_feature_names()
