@@ -10,6 +10,7 @@ from lib.training_modules.bert.train.bert_model_impl import BertModelImpl
 # from lib.training_modules.bilstm.preprocess.bilstm_preprocess import BiLstmPreprocess
 # from lib.training_modules.bilstm.rnd.bilstm_impl import do_bi_lstm
 # from lib.training_modules.bilstm.train.bilstm_model import BiLstmModelImpl
+from lib.training_modules.bert_all_feature.bert_new import BertNew
 
 r"""
     1- Read dataset...
@@ -18,21 +19,17 @@ r"""
     4- Run Bert
 """
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 train_df, val_df, test_df = read_pheme_ds()
-train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
-bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
+# train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
+# bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
+#
+# BertModelImpl(train_tensor_dataset=train_tensor_dataset, val_tensor_dataset=val_tensor_dataset,
+#               test_tensor_dataset=test_tensor_dataset, num_classes=label_classes, train_len=train_len,
+#               validation_len=validation_len, test_len=test_len, bert_preprocess_model=bert_preprocess_model).start()
 
-BertModelImpl(train_tensor_dataset=train_tensor_dataset,
-              val_tensor_dataset=val_tensor_dataset,
-              test_tensor_dataset=test_tensor_dataset,
-              test_len=test_len,
-              train_len=train_len,
-              validation_len=validation_len,
-              num_classes=label_classes,
-              bert_preprocess_model=bert_preprocess_model).start()
-
+BertNew(train_df, val_df, test_df).start()
 # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len, bi_lstm_preprocess_model = \
 #     BiLstmPreprocess().start(
 #         train_df, val_df, test_df)
