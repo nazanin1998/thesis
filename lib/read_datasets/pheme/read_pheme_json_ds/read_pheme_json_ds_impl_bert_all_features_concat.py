@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 from tabulate import tabulate
 
+from lib.preprocessing.simple_preprocessing.simple_preprocess import SimplePreprocess
 from lib.read_datasets.pheme.read_pheme_json_ds.read_pheme_json_ds import ReadPhemeJsonDS
 import os
 import pandas as pd
@@ -117,6 +118,8 @@ class ReadPhemeJsonDSImplBertAllFeatureConcat(ReadPhemeJsonDS):
     def __extract_csv_from_events(self):
         tweets = self.__extract_tweet_list_from_events()
         self.df = pd.DataFrame(tweets)
+        simple_pre = SimplePreprocess()
+        self.df = simple_pre.preprocess(df=self.df, col_names=[constants.PHEME_TOTAL_TEXT_COL_NAME])
         x = self.df[:]
         y = x.pop(constants.PHEME_LABEL_COL_NAME)
 
