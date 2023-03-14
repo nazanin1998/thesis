@@ -27,7 +27,7 @@ from lib.utils.file_dir_handler import FileDirHandler
 
 
 class TweetModel:
-    def to_json(self, is_rumour, event, is_source_tweet, reaction_text):
+    def to_json(self, is_rumour, event, is_source_tweet, reaction_text, reactions=None):
         user = self.user
         text = self.text
         user.verified = self.__normalize_boolean(user.verified)
@@ -39,8 +39,10 @@ class TweetModel:
         user.profile_background_tile = self.__normalize_boolean(user.profile_background_tile)
         user.profile_use_background_image = self.__normalize_boolean(user.profile_use_background_image)
         self.truncated = self.__normalize_boolean(self.truncated)
+
         return {
             'event': event,
+            'total_concatenated_sentences': self.get_concatenated_sentence(event, reactions=reactions),
             'text': text,
             'reaction_text': reaction_text,
             'is_rumour': is_rumour,
@@ -72,7 +74,6 @@ class TweetModel:
             'user.created_at': user.created_at,
             'user.listed_count': user.listed_count,
             'user.default_profile': user.default_profile,
-            'user.tweets_count': user.statuses_count,
             'user.statuses_count': user.statuses_count,
             'user.friends_count': user.friends_count,
             'user.favourites_count': user.favourites_count,
@@ -88,6 +89,47 @@ class TweetModel:
             'user.profile_background_image_url_https': user.profile_background_image_url_https
 
         }
+
+    def get_concatenated_sentence(self, event, reactions=None):
+        combined = ""
+
+        event = event.split("/")[-1]
+        tweet_text = self.text
+        is_truncated = self.truncated
+        symbol_count = len(self.symbols)
+        mentions_count = len(self.user_mentions)
+        urls_count = len(self.urls)
+        retweet_count = self.retweet_count
+        favorite_count = self.favorite_count
+        protected_user = self.user.protected
+        verified_user = self.user.verified
+        user_statuses_count = self.user.statuses_count
+        user_friends_count = self.user.friends_count
+        user_fav_count = self.user.favourites_count
+        user_followers_count = self.user.followers_count
+
+        combined += f"Tweet text is {tweet_text}. "
+        combined += f"This item event is {event}. "
+        combined += f"It has {symbol_count} symbols. "
+        combined += f"It has {mentions_count} mentions. "
+        combined += f"It has {urls_count} urls. "
+        combined += f"It's retweeted {retweet_count} times. "
+        combined += f"It liked {favorite_count} times. "
+        combined += f"It's user has {user_statuses_count} status. "
+        combined += f"It's user has {user_friends_count} friends. "
+        combined += f"It's user has {user_fav_count} favorites. "
+        combined += f"It's user has {user_followers_count} followers. "
+
+        combined += f"It posted by {'' if protected_user else 'un'}protected user. "
+        combined += f"It posted by {'' if verified_user else 'un'}verified user. "
+
+        if reactions is not None:
+            index = 0
+            for reaction in reactions:
+                index += 1
+                combined += f"Reaction {index}: {reaction.text}. "
+
+        return combined
 
     def __init__(self, id, source, truncated, favorited, retweeted, in_reply_to_user_id, retweet_count,
                  contributors,

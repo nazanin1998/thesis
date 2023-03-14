@@ -138,11 +138,13 @@ class BertNew:
         # metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
         #     'accuracy', dtype=tensorflow.float32)
         model.compile(optimizer=optimizer, loss=loss, metrics=[metrics] )
-        metric_callback = KerasMetricCallback(
-            metric_fn=compute_metrics, eval_dataset=tf_validation_dataset, label_cols=None,
-        )
+        # metric_callback = KerasMetricCallback(
+        #     metric_fn=compute_metrics, eval_dataset=tf_validation_dataset, label_cols=None,
+        # )
 
-        callbacks = [metric_callback, tensorboard_callback,
+        callbacks = [
+            # metric_callback,
+            tensorboard_callback,
                      # push_to_hub_callback
                      ]
 
