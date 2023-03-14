@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow
+import tensorflow as tf
 from datasets import Dataset, DatasetDict, load_metric
 from transformers import BertForSequenceClassification, BertForNextSentencePrediction, \
     AutoModelForSequenceClassification, TFAutoModelForSequenceClassification, create_optimizer, AutoTokenizer
@@ -98,21 +99,24 @@ class BertNew:
         print(f'input_spec {input_spec}')
 
         from transformers.keras_callbacks import KerasMetricCallback
-        # def compute_metrics(predictions, labels):
-        #     decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
-        #     decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)
-        #     result = metric.compute(predictions=decoded_predictions, references=decoded_labels)
-        #     return {key: value.mid.fmeasure * 100 for key, value in result.items()}
+        def compute_metrics(predictions, labels):
+            decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
+            decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)
+            result = metric.compute(predictions=decoded_predictions, references=decoded_labels)
+            return {key: value.mid.fmeasure * 100 for key, value in result.items()}
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        metrics = tf.keras.metrics.SparseCategoricalAccuracy(
+            'accuracy', dtype=tf.float32)
 
-        def compute_metrics(eval_predictions):
-
-            predictions, labels = eval_predictions
-            if self.__task != "stsb":
-                predictions = np.argmax(predictions, axis=1)
-            else:
-                predictions = predictions[:, 0]
-            print(f"baby label {labels}")
-            return metric.compute(predictions=predictions, references=labels)
+        # def compute_metrics(eval_predictions):
+        #
+        #     predictions, labels = eval_predictions
+        #     if self.__task != "stsb":
+        #         predictions = np.argmax(predictions, axis=1)
+        #     else:
+        #         predictions = predictions[:, 0]
+        #     print(f"baby label {labels}")
+        #     return metric.compute(predictions=predictions, references=labels)
 
         model_name = self.__model_checkpoint.split("/")[-1]
         push_to_hub_model_id = f"{model_name}-finetuned-{self.__task}"
@@ -133,7 +137,7 @@ class BertNew:
         loss = tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         # metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
         #     'accuracy', dtype=tensorflow.float32)
-        model.compile(optimizer=optimizer, loss=loss, )
+        model.compile(optimizer=optimizer, loss=loss, metrics=[metrics] )
         metric_callback = KerasMetricCallback(
             metric_fn=compute_metrics, eval_dataset=tf_validation_dataset, label_cols=None,
         )
