@@ -23,7 +23,7 @@ from lib.models.user_model import UserModel
 # user.utc_dist, hasperiod, number_punct, negativewordcount, positivewordcount, capitalratio,
 # contentlength, sentimentscore, Noun, has_url_in_text
 #
-from lib.utils.file_dir_handler import FileDirHandler
+from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
 
 
 class TweetModel:

@@ -11,7 +11,7 @@ from lib.preprocessing.pheme.word_root.word_root_lemma_impl import WordRootLemma
 import lib.constants as constants
 from lib.preprocessing.str_processing_impl import StrProcessingImpl
 
-from lib.utils.file_dir_handler import FileDirHandler
+from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
 
 
 # //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
