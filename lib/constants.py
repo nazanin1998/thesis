@@ -3,6 +3,7 @@ NON_RUMOURS = 'non-rumours'
 RUMOURS = 'rumours'
 PHEME_LABEL_COL_NAME = 'is_rumour'
 PHEME_TOTAL_TEXT_COL_NAME = 'total_concatenated_sentences'
+PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME = 'preprocessed_total_concatenated_sentences'
 PHEME_LABEL_SECONDARY_COL_NAME = 'label'
 
 TRAIN = 'train'

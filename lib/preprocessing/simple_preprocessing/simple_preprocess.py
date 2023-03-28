@@ -26,6 +26,7 @@ class SimplePreprocess:
     def single_item_preprocess(self, text):
         self.__current_index += 1
         print(self.__current_index, end=', ')
+        print(self.print_summery())
 
         self.__expanded_text = self.__expander.expand_contractions(text=text)
 

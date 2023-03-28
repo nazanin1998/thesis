@@ -139,15 +139,9 @@ class ReadPhemeJsonDSImplBertAllFeatureConcat(ReadPhemeJsonDS):
         self.test_df = self.test_df.join(y_test)
 
         self.__make_directory_for_specified_split_size()
-        if PREPROCESS_ONLY_SOURCE_TWEET:
-            self.train_df.to_csv(get_train_path_for_specified_split_size(), index=False)
-            self.val_df.to_csv(get_val_path_for_specified_split_size(), index=False)
-            self.test_df.to_csv(get_test_path_for_specified_split_size(), index=False)
-        else:
-            # self.df.to_csv(get_val_path_for_specified_split_size(), index=False)
-            self.train_df.to_csv(get_train_path_for_specified_split_size(), index=False)
-            self.val_df.to_csv(get_val_path_for_specified_split_size(), index=False)
-            self.test_df.to_csv(get_test_path_for_specified_split_size(), index=False)
+        self.train_df.to_csv(get_train_path_for_specified_split_size(), index=False)
+        self.val_df.to_csv(get_val_path_for_specified_split_size(), index=False)
+        self.test_df.to_csv(get_test_path_for_specified_split_size(), index=False)
 
     @staticmethod
     def __make_directory_for_specified_split_size():
