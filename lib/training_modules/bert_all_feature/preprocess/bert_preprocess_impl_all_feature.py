@@ -4,7 +4,7 @@ from datasets import Dataset, DatasetDict
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification, BertTokenizer
 
 from lib.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
-    VALIDATION, TEST, PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME
+    VALIDATION, TEST, PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME, PHEME_TOTAL_TEXT_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME, BERT_BATCH_SIZE, PREPROCESS_DO_SHUFFLING, \
     BERT_EPOCHS
 from lib.training_modules.bert.preprocess.bert_preprocessing import BertPreprocessing
@@ -16,7 +16,7 @@ class BertPreprocessingImplAllFeatures:
         return Dataset.from_pandas(df)
 
     def convert_df_to_ds_and_prepare_features_cols(self, df):
-        df = df[[PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME, PHEME_LABEL_COL_NAME]]
+        df = df[[PHEME_TOTAL_TEXT_COL_NAME, PHEME_LABEL_COL_NAME]]
         ds = self.convert_df_to_ds(df).rename_column(PHEME_LABEL_COL_NAME,
                                                      PHEME_LABEL_SECONDARY_COL_NAME)
 
@@ -59,6 +59,6 @@ class BertPreprocessingImplAllFeatures:
         return encoded_dataset, self.__tokenizer
 
     def tokenizer_function(self, df):
-        return self.__tokenizer(df[PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME],
+        return self.__tokenizer(df[PHEME_TOTAL_TEXT_COL_NAME],
                                 padding='longest',
                                 truncation=True)
