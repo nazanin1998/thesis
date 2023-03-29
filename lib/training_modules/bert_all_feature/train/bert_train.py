@@ -81,6 +81,7 @@ class BertTrain:
             num_train_steps=self.__num_train_steps
         )
 
+    # @jit(target_backend='cuda')
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
         model_name = BERT_MODEL_NAME.split("/")[-1]
         # push_to_hub_model_id = f"{model_name}-finetuned-{self.__task}"

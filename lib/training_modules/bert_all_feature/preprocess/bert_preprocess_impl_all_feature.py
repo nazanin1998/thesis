@@ -1,7 +1,7 @@
 from abc import ABC
 
 from datasets import Dataset, DatasetDict
-from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
+from transformers import AutoTokenizer, TFAutoModelForSequenceClassification, BertTokenizer
 
 from lib.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
     VALIDATION, TEST, PHEME_PREPROCESSED_TOTAL_TEXT_COL_NAME
@@ -10,7 +10,7 @@ from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME, BERT_
 from lib.training_modules.bert.preprocess.bert_preprocessing import BertPreprocessing
 
 
-class BertPreprocessingImplAllFeatures():
+class BertPreprocessingImplAllFeatures:
     @staticmethod
     def convert_df_to_ds(df):
         return Dataset.from_pandas(df)
@@ -36,6 +36,7 @@ class BertPreprocessingImplAllFeatures():
         self.__dataset = self.convert_splited_df_to_ds_dict(train_df, val_df, test_df)
 
         self.__tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
+        # self.__tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME, do_lower_case=True)
         # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
     def start(self):
