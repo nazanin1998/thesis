@@ -22,7 +22,7 @@ class BertTrain:
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
         self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
         self.__num_train_steps = int(self.__steps_per_epoch * BERT_EPOCHS)
-        self.__num_warmup_steps = self.__num_train_steps // 10
+        self.__num_warmup_steps = int(self.__num_train_steps // 10)
 
     def start(self):
         # batches_per_epoch = len(self.__encoded_dataset[TRAIN]) // BERT_BATCH_SIZE

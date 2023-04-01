@@ -42,9 +42,13 @@ class SavePhemeCsv:
         test_df = test_df.join(y_test)
 
         self.__make_directory_for_specified_split_size()
-        train_df.to_csv(self.__train_path, sep=",", line_terminator='\n', index=False)
-        val_df.to_csv(self.__val_path, sep=",", line_terminator='\n', index=False)
-        test_df.to_csv(self.__test_path, sep=",", line_terminator='\n', index=False)
+        train_df.to_csv(self.__train_path, index=False)
+        val_df.to_csv(self.__val_path, index=False)
+        test_df.to_csv(self.__test_path, index=False)
+
+        # train_df.to_csv(self.__train_path, sep=",", lineterminator='\n', index=False)
+        # val_df.to_csv(self.__val_path, sep=",", lineterminator='\n', index=False)
+        # test_df.to_csv(self.__test_path, sep=",", lineterminator='\n', index=False)
         return train_df, val_df, test_df
 
     @staticmethod
