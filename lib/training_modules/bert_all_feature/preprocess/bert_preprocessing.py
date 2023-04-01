@@ -15,7 +15,6 @@ class BertPreprocessing:
         # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
     def convert_df_to_ds_and_prepare_features_cols(self, df):
-
         df = df[[PHEME_TOTAL_TEXT_SECONDARY_COL_NAME, PHEME_LABEL_COL_NAME]]
         ds = self.__basic_preprocess.convert_df_to_ds(df)
         ds = ds.rename_column(PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME)

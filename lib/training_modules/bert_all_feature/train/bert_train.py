@@ -1,5 +1,6 @@
 import tensorflow
 from keras.callbacks import TensorBoard
+from keras.optimizers import Adam
 from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
@@ -54,7 +55,7 @@ class BertTrain:
 
         optimizer, schedule = self.get_optimizer()
 
-        model.compile(optimizer=optimizer, loss=self.__loss, metrics=[self.__metrics])
+        model.compile(optimizer=Adam(), loss=self.__loss, metrics=[self.__metrics])
 
         history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
 
