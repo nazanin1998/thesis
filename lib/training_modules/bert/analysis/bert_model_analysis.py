@@ -17,14 +17,14 @@ class BertModelAnalysis:
             print()
 
     @staticmethod
-    def plot_bert_evaluation_metrics(acc, val_acc, loss, val_loss):
+    def plot_bert_evaluation_metrics(train_acc, val_acc, train_loss, val_loss):
         fig = plt.figure(figsize=(10, 6))
         fig.tight_layout()
 
         plt.subplot(2, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
-        plt.plot(BERT_EPOCHS, loss, 'r', label='Training loss')
+        plt.plot(BERT_EPOCHS, train_loss, 'r', label='Training loss')
         plt.plot(BERT_EPOCHS, val_loss, 'b', label='Validation loss')
         plt.title('Training and validation loss')
         # plt.xlabel('Epochs')
@@ -32,7 +32,7 @@ class BertModelAnalysis:
         plt.legend()
 
         plt.subplot(2, 1, 2)
-        plt.plot(BERT_EPOCHS, acc, 'r', label='Training acc')
+        plt.plot(BERT_EPOCHS, train_acc, 'r', label='Training acc')
         plt.plot(BERT_EPOCHS, val_acc, 'b', label='Validation acc')
         plt.title('Training and validation accuracy')
         plt.xlabel('Epochs')

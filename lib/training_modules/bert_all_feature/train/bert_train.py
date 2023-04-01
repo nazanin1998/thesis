@@ -1,6 +1,6 @@
 import tensorflow
 from keras.callbacks import TensorBoard
-from keras.optimizers import Adam
+from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
 from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
@@ -8,8 +8,8 @@ from transformers.keras_callbacks import KerasMetricCallback
 from lib.constants import TRAIN, VALIDATION, TEST
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_MODEL_NAME, \
-    PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE
-from lib.utils.log.logger import log_end_phase, log_line
+    PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
+from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
 
 
 class BertTrain:
@@ -30,6 +30,18 @@ class BertTrain:
         # total_train_steps = int(batches_per_epoch * BERT_EPOCHS)
         # actual_task = "mnli" if self.__task == "mnli-mm" else self.__task
         # metric = load("glue", self.__task)
+        log_start_phase(2, 'BERT MODEL STARTED')
+        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
+        # log_phase_desc(f'Preprocess sequence len  : {PREPROCESS_SEQ_LEN}')
+        # log_phase_desc(f'Preprocess batch size    : {PREPROCESS_BATCH_SIZE}')
+        # log_phase_desc(f'Preprocess buffer size   : {PREPROCESS_BUFFER_SIZE}')
+        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
+        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
+        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS}')
+        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
+        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
+        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
+        # log_phase_desc(f'Assume only source tweets: {PREPROCESS_ONLY_SOURCE_TWEET}')
 
         model = self.create_classifier_model()
 
@@ -53,9 +65,9 @@ class BertTrain:
         #     print(f"baby label {labels}")
         #     return metric.compute(predictions=predictions, references=labels)
 
-        optimizer, schedule = self.get_optimizer()
+        optimizer = self.get_optimizer_from_conf()
 
-        model.compile(optimizer=Adam(learning_rate=BERT_LEARNING_RATE), loss=self.__loss, metrics=[self.__metrics])
+        model.compile(optimizer=optimizer, loss=self.__loss, metrics=[self.__metrics])
 
         history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
 
@@ -63,14 +75,15 @@ class BertTrain:
 
         analyser = BertModelAnalysis(model=model, history=history)
         analyser.plot_bert_model()
-        acc, val_acc, loss, val_loss, first_loss, accuracy = analyser.evaluation(
+        # acc, val_acc, loss, val_loss, first_loss, accuracy \
+        train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy = analyser.evaluation(
             test_tensor_dataset=tf_test_dataset)
 
         analyser.plot_bert_evaluation_metrics(
-            acc=acc,
-            val_acc=val_acc,
-            loss=loss,
-            val_loss=val_loss)
+            train_acc=train_acc,
+            val_acc=validation_acc,
+            train_loss=train_loss,
+            val_loss=validation_loss)
 
         log_end_phase(3, 'BERT ON TWEET TEXT')
         log_line()
@@ -81,6 +94,25 @@ class BertTrain:
             num_warmup_steps=self.__num_warmup_steps,
             num_train_steps=self.__num_train_steps
         )
+
+    @staticmethod
+    def get_optimizer_from_conf():
+        # optimizer = optimization.create_optimizer(
+        #     init_lr=init_lr,
+        #     num_train_steps=num_train_steps,
+        #     num_warmup_steps=num_warmup_steps,
+        #     optimizer_type='adamw')
+
+        if BERT_OPTIMIZER_NAME == 'adam':
+            return Adam(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "sgd":
+            return SGD(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adamax":
+            return Adamax(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adadelta":
+            return Adadelta(learning_rate=BERT_LEARNING_RATE)
+        elif BERT_OPTIMIZER_NAME == "adagrad":
+            return Adagrad(learning_rate=BERT_LEARNING_RATE)
 
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
         model_name = BERT_MODEL_NAME.split("/")[-1]

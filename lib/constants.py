@@ -18,6 +18,7 @@ PHEME_CSV_ONLY_TEXT_PATH = './dataset/pheme_csv/pheme_only_text.csv'
 PHEME_TRAIN_CSV_NAME = 'pheme_train.csv'
 PHEME_TEST_CSV_NAME = 'pheme_test.csv'
 PHEME_VAL_CSV_NAME = 'pheme_val.csv'
+PHEME_K_FOLD_CSV_NAME = '_fold_pheme.csv'
 
 PHEME_CSV_ONLY_TEXT_NAME = 'pheme_only_text.csv'
 
