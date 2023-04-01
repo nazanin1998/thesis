@@ -55,7 +55,7 @@ class BertTrain:
 
         optimizer, schedule = self.get_optimizer()
 
-        model.compile(optimizer=Adam(), loss=self.__loss, metrics=[self.__metrics])
+        model.compile(optimizer=Adam(learning_rate=BERT_LEARNING_RATE), loss=self.__loss, metrics=[self.__metrics])
 
         history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
 
