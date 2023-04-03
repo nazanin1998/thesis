@@ -1,13 +1,12 @@
 import os
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
-from lib import constants
+from lib.training_modules.base.preprocess.base_preprocess import my_train_val_test_split
+from lib.utils import constants
 from lib.preprocessing.simple_preprocessing.simple_preprocess import SimplePreprocess
-from lib.training_modules.basic_reading_ds.basic_reading_ds import my_train_val_test_split
 from lib.training_modules.bert.bert_configurations import PREPROCESS_ONLY_SOURCE_TWEET, BERT_TEST_SIZE, BERT_TRAIN_SIZE, \
-    BERT_VAL_SIZE, PREPROCESS_DO_SHUFFLING, BERT_K_FOLD
+    BERT_VAL_SIZE
 
 
 class SavePhemeCsv:
@@ -85,10 +84,6 @@ class SavePhemeCsv:
 def get_directory_for_specified_split_size():
     specified_split_dir = f"/{round(BERT_TRAIN_SIZE * 100)}_{round(BERT_VAL_SIZE * 100)}_{round(BERT_TEST_SIZE * 100)}"
     return constants.PHEME_CSV_DIR + specified_split_dir
-
-
-def get_k_fold_path():
-    return constants.PHEME_CSV_DIR + "/" + str(BERT_K_FOLD) + constants.PHEME_K_FOLD_CSV_NAME
 
 
 def get_train_path_for_specified_split_size():

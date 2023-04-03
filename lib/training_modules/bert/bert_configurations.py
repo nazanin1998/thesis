@@ -1,4 +1,5 @@
 import tensorflow
+ENABLE_GPU = False
 
 PREPROCESS_SEQ_LEN = 128
 PREPROCESS_BATCH_SIZE = 32

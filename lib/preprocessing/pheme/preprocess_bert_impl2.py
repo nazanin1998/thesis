@@ -8,10 +8,10 @@ from lib.preprocessing.pheme.preprocessing import PreProcess
 from lib.preprocessing.pheme.remover.remover_impl import RemoverImpl
 from lib.preprocessing.pheme.tokenizing.tokenizer_impl import TokenizerImpl
 from lib.preprocessing.pheme.word_root.word_root_lemma_impl import WordRootLemmaImpl
-import lib.constants as constants
+import lib.utils.constants as constants
 from lib.preprocessing.str_processing_impl import StrProcessingImpl
 
-from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
+from lib.utils.file_dir_handler import FileDirHandler
 
 
 # //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

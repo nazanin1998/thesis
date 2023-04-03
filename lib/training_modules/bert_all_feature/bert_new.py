@@ -1,15 +1,11 @@
-import numpy as np
-import pandas as pd
 import tensorflow
 import tensorflow as tf
-from datasets import Dataset, DatasetDict, load_metric
-from transformers import BertForSequenceClassification, BertForNextSentencePrediction, \
-    AutoModelForSequenceClassification, TFAutoModelForSequenceClassification, create_optimizer, AutoTokenizer
-from transformers.keras_callbacks import PushToHubCallback
+from datasets import Dataset, DatasetDict
+from transformers import BertForSequenceClassification, TFAutoModelForSequenceClassification, create_optimizer, AutoTokenizer
 from keras.callbacks import TensorBoard
 from evaluate import load
 
-from lib.constants import PHEME_LABEL_COL_NAME
+from lib.utils.constants import PHEME_LABEL_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_LEARNING_RATE, BERT_BATCH_SIZE
 
 
@@ -98,7 +94,6 @@ class BertNew:
         input_spec, label_spec = tf_train_dataset.element_spec
         print(f'input_spec {input_spec}')
 
-        from transformers.keras_callbacks import KerasMetricCallback
         def compute_metrics(predictions, labels):
             decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
             decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)

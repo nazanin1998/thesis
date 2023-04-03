@@ -1,6 +1,18 @@
+from datasets import Dataset
 from sklearn.model_selection import train_test_split
 
 from lib.training_modules.bert.bert_configurations import PREPROCESS_DO_SHUFFLING
+
+
+def convert_df_to_ds(df):
+    return Dataset.from_pandas(df)
+
+
+def merge_3_dataframes(ds1, ds2, ds3):
+    df = ds1[:]
+    df = df.append(ds2)
+    df = df.append(ds3)
+    return df
 
 
 def my_train_val_test_split(x, y, train_size, val_size, test_size):
