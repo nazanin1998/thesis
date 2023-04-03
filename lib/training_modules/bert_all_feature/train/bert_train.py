@@ -1,9 +1,10 @@
 import tensorflow
 from keras.callbacks import TensorBoard
 from sklearn.model_selection import KFold
+from tensorflow.python.keras.callbacks import History
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 
-from lib.training_modules.base.analysis.base_analysis import log_configurations
+from lib.training_modules.base.analysis.base_analysis import log_configurations, get_history_metrics
 from lib.training_modules.base.train.base_train import get_optimizer_from_conf, get_sparse_categorical_acc_metric, \
     get_sparse_categorical_cross_entropy
 from lib.utils.constants import TRAIN, VALIDATION, TEST, PHEME_LABEL_SECONDARY_COL_NAME
@@ -89,12 +90,12 @@ class BertTrain:
         callbacks = [tensorboard_callback]
 
         if BERT_USE_K_FOLD:
-            n = 5
-            kf = KFold(n_splits=n, shuffle=True)
+            kf = KFold(n_splits=BERT_K_FOLD, shuffle=True)
 
             results = []
-
+            fold_index = 0
             for train_index, test_index in kf.split(self.__encoded_dataset[TRAIN]):
+                fold_index+=1
                 print(f"splits=> train_index: {train_index}, val_index: {test_index}")
                 print(f"splits=> train_index_len: {len(train_index)}, val_index_len: {len(test_index)}")
                 # # splitting Dataframe (dataset not included)
@@ -121,10 +122,16 @@ class BertTrain:
                 # result, model_outputs, wrong_predictions = model.eval_model(val_df, acc=accuracy_score)
                 # print(result['acc'])
                 # # append model score
+                train_loss, validation_loss, train_acc, validation_acc = get_history_metrics(history)
+
+                log_phase_desc(f'FOLD {fold_index}')
+                log_phase_desc(f'Training   => Accuracy: {train_acc}, Loss: {train_loss}')
+                log_phase_desc(f'Test       => Accuracy: {validation_acc}, Loss: {validation_loss}')
+
                 results.append(history)
 
             print("results", results)
-            print(f"Mean-Precision: {sum(results) / len(results)}")
+            # print(f"Mean-Precision: {sum(results) / len(results)}")
 
             return results
         else:

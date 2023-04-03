@@ -1,6 +1,7 @@
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
+from lib.training_modules.base.analysis.base_analysis import get_history_metrics
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS
 from lib.utils.log.logger import log_phase_desc
 
@@ -42,7 +43,7 @@ class BertModelAnalysis:
 
     def evaluation(self, test_tensor_dataset):
 
-        train_loss, validation_loss, train_acc, validation_acc = self.get_history_metrics()
+        train_loss, validation_loss, train_acc, validation_acc = get_history_metrics(self.__history)
         test_loss, test_accuracy = self.__model.evaluate(test_tensor_dataset)
 
         log_phase_desc(f'Training   => Accuracy: {train_acc}, Loss: {train_loss}')
@@ -51,12 +52,3 @@ class BertModelAnalysis:
 
         return train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy
 
-    def get_history_metrics(self):
-        history_dict = self.__history.history
-
-        train_loss = history_dict['loss']
-        validation_loss = history_dict['val_loss']
-        train_acc = history_dict['accuracy']
-        validation_acc = history_dict['val_accuracy']
-
-        return train_loss, validation_loss, train_acc, validation_acc

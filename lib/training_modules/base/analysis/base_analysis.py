@@ -15,3 +15,14 @@ def log_configurations():
     log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
     log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
     # log_phase_desc(f'Assume only source tweets: {PREPROCESS_ONLY_SOURCE_TWEET}')
+
+
+def get_history_metrics(hist):
+    history_dict = hist.history
+
+    train_loss = history_dict['loss']
+    validation_loss = history_dict['val_loss']
+    train_acc = history_dict['accuracy']
+    validation_acc = history_dict['val_accuracy']
+
+    return train_loss, validation_loss, train_acc, validation_acc
