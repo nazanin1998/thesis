@@ -111,17 +111,12 @@ class BertTrain:
                 history = model.fit(
                     tf_train_dataset,
                     validation_data=tf_validation_dataset,
-                    epochs=1,
+                    epochs=3,
                     callbacks=callbacks,
                     batch_size=BERT_BATCH_SIZE,
                     # validation_steps=self.__validation_steps,
                 )
-                # model.eval_model(test_ds)
-                # model.train_model(train_df)
-                # # validate the model
-                # result, model_outputs, wrong_predictions = model.eval_model(val_df, acc=accuracy_score)
-                # print(result['acc'])
-                # # append model score
+
                 train_loss, validation_loss, train_acc, validation_acc = get_history_metrics(history)
 
                 log_phase_desc(f'FOLD {fold_index}')
