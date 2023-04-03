@@ -1,10 +1,12 @@
 import tensorflow
 from keras.callbacks import TensorBoard
-from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
 from sklearn.model_selection import KFold
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 
-from lib.utils.constants import TRAIN, VALIDATION, TEST
+from lib.training_modules.base.analysis.base_analysis import log_configurations
+from lib.training_modules.base.train.base_train import get_optimizer_from_conf, get_sparse_categorical_acc_metric, \
+    get_sparse_categorical_cross_entropy
+from lib.utils.constants import TRAIN, VALIDATION, TEST, PHEME_LABEL_SECONDARY_COL_NAME
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_MODEL_NAME, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME, BERT_USE_K_FOLD, BERT_K_FOLD
@@ -13,37 +15,28 @@ from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_p
 
 class BertTrain:
     def __init__(self, encoded_dataset, tokenizer):
+        self.__id2label = {'0': "Rumor", '1': "Non Rumor"}
+        self.__label2id = {val: key for key, val in self.__id2label.items()}
+
         self.__tokenizer = tokenizer
         self.__encoded_dataset = encoded_dataset
-        self.__loss = tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.__metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
-            'accuracy', dtype=tensorflow.float32)
+
+        self.__num_labels = len(self.__encoded_dataset[TRAIN].unique(PHEME_LABEL_SECONDARY_COL_NAME))
+
+        self.__loss = get_sparse_categorical_cross_entropy()
+        self.__metrics = get_sparse_categorical_acc_metric()
+        self.__optimizer = get_optimizer_from_conf()
 
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
-        if BERT_USE_K_FOLD:
-            self.__validation_steps = 0
-        else:
-            self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
         self.__num_train_steps = int(self.__steps_per_epoch * BERT_EPOCHS)
         self.__num_warmup_steps = int(self.__num_train_steps // 10)
 
+        if not BERT_USE_K_FOLD:
+            self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
+
     def start(self):
-        log_start_phase(2, 'BERT MODEL STARTED')
-        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
-        # log_phase_desc(f'Preprocess sequence len  : {PREPROCESS_SEQ_LEN}')
-        # log_phase_desc(f'Preprocess batch size    : {PREPROCESS_BATCH_SIZE}')
-        # log_phase_desc(f'Preprocess buffer size   : {PREPROCESS_BUFFER_SIZE}')
-        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
-        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
-        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS}')
-        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
-        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
-        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
-        # log_phase_desc(f'Assume only source tweets: {PREPROCESS_ONLY_SOURCE_TWEET}')
-
-        model = self.create_classifier_model()
-
-        tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
+        log_start_phase(1, 'BERT MODEL STARTED')
+        log_configurations()
 
         # def compute_metrics(predictions, labels):
         #     decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
@@ -58,20 +51,16 @@ class BertTrain:
         #         predictions = np.argmax(predictions, axis=1)
         #     else:
         #         predictions = predictions[:, 0]
-        #     print(f"baby label {labels}")
         #     return metric.compute(predictions=predictions, references=labels)
 
-        optimizer = self.get_optimizer_from_conf()
-
-        model.compile(optimizer=optimizer, loss=self.__loss, metrics=[self.__metrics])
-
-        history = self.__fit_model(model)
+        history = self.__fit_model()
 
         model.summary()
 
         analyser = BertModelAnalysis(model=model, history=history)
         analyser.plot_bert_model()
         # acc, val_acc, loss, val_loss, first_loss, accuracy \
+        tf_test_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[TEST])
         train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy = analyser.evaluation(
             test_tensor_dataset=tf_test_dataset)
 
@@ -91,52 +80,59 @@ class BertTrain:
             num_train_steps=self.__num_train_steps
         )
 
-    @staticmethod
-    def get_optimizer_from_conf():
-        # optimizer = optimization.create_optimizer(
-        #     init_lr=init_lr,
-        #     num_train_steps=num_train_steps,
-        #     num_warmup_steps=num_warmup_steps,
-        #     optimizer_type='adamw')
-
-        if BERT_OPTIMIZER_NAME == 'adam':
-            return Adam(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "sgd":
-            return SGD(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adamax":
-            return Adamax(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adadelta":
-            return Adadelta(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adagrad":
-            return Adagrad(learning_rate=BERT_LEARNING_RATE)
-
-    def __fit_model(self, model):
-        tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
+    def __fit_model(self):
 
         model_name = BERT_MODEL_NAME.split("/")[-1]
-        # push_to_hub_model_id = f"{model_name}-finetuned-{self.__task}"
 
         tensorboard_callback = TensorBoard(log_dir="./text_classification_model_save/logs")
 
-        # push_to_hub_callback = PushToHubCallback(
-        #     output_dir="./text_classification_model_save",
-        #     tokenizer=self.__tokenizer,
-        #     hub_model_id=push_to_hub_model_id,
-        #
-        # )
-        # metric_callback = KerasMetricCallback(
-        #     metric_fn=compute_metrics, eval_dataset=tf_validation_dataset, label_cols=None,
-        # )
-        callbacks = [
-            # metric_callback,
-            tensorboard_callback,
-            # push_to_hub_callback
-        ]
-        if BERT_USE_K_FOLD:
+        callbacks = [tensorboard_callback]
 
-            return history
+        if BERT_USE_K_FOLD:
+            n = 5
+            kf = KFold(n_splits=n, shuffle=True)
+
+            results = []
+
+            for train_index, test_index in kf.split(self.__encoded_dataset[TRAIN]):
+                print(f"splits=> train_index: {train_index}, val_index: {test_index}")
+                print(f"splits=> train_index_len: {len(train_index)}, val_index_len: {len(test_index)}")
+                # # splitting Dataframe (dataset not included)
+
+                model = self.__create_compile_model()
+
+                train_ds = self.__encoded_dataset[TRAIN].select(train_index)
+                test_ds = self.__encoded_dataset[TRAIN].select(test_index)
+
+                tf_train_dataset = self.prepare_special_ds_for_model(model, train_ds)
+                tf_validation_dataset = self.prepare_special_ds_for_model(model, test_ds)
+
+                history = model.fit(
+                    tf_train_dataset,
+                    validation_data=tf_validation_dataset,
+                    epochs=1,
+                    callbacks=callbacks,
+                    batch_size=BERT_BATCH_SIZE,
+                    # validation_steps=self.__validation_steps,
+                )
+                # model.eval_model(test_ds)
+                # model.train_model(train_df)
+                # # validate the model
+                # result, model_outputs, wrong_predictions = model.eval_model(val_df, acc=accuracy_score)
+                # print(result['acc'])
+                # # append model score
+                results.append(history)
+
+            print("results", results)
+            print(f"Mean-Precision: {sum(results) / len(results)}")
+
+            return results
         else:
-            tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
+            model = self.__create_compile_model()
+
+            tf_train_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[TRAIN])
+            tf_validation_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[VALIDATION])
+
             history = model.fit(
                 tf_train_dataset,
                 validation_data=tf_validation_dataset,
@@ -146,6 +142,11 @@ class BertTrain:
                 validation_steps=self.__validation_steps,
             )
             return history
+
+    def __create_compile_model(self):
+        model = self.create_bert_classifier_model()
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
+        return model
 
     def do_k_fold_fit(self):
         n = 5
@@ -167,7 +168,7 @@ class BertTrain:
             # append model score
             results.append(result['acc'])
 
-    def prepare_ds(self, model, ds):
+    def prepare_special_ds_for_model(self, model, ds):
         return model.prepare_tf_dataset(
             ds,
             shuffle=PREPROCESS_DO_SHUFFLING,
@@ -175,12 +176,12 @@ class BertTrain:
             tokenizer=self.__tokenizer,
         )
 
-    @staticmethod
-    def create_classifier_model():
-        id2label = {'0': "Rumor", '1': "Non Rumor"}
-        label2id = {val: key for key, val in id2label.items()}
+    def create_bert_classifier_model(self):
 
         model = TFAutoModelForSequenceClassification.from_pretrained(
-            BERT_MODEL_NAME, num_labels=2, id2label=id2label, label2id=label2id
+            BERT_MODEL_NAME,
+            num_labels=self.__num_labels,
+            id2label=self.__id2label,
+            label2id=self.__label2id
         )
         return model

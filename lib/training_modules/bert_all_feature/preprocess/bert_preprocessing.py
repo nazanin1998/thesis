@@ -24,6 +24,7 @@ class BertPreprocessing:
     def __convert_splitting_df_to_ds_dict(self, train_df, val_df, test_df):
         dataset = DatasetDict()
 
+        # dataset[''].select
         if BERT_USE_K_FOLD:
             df = merge_3_dataframes(train_df, val_df, test_df)
             dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(df)
@@ -31,7 +32,6 @@ class BertPreprocessing:
             dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(train_df)
             dataset[VALIDATION] = self.convert_df_to_ds_and_prepare_features_cols(val_df)
             dataset[TEST] = self.convert_df_to_ds_and_prepare_features_cols(test_df)
-
         return dataset
 
     def start(self):
@@ -46,4 +46,3 @@ class BertPreprocessing:
         return self.__tokenizer(df[PHEME_TOTAL_TEXT_SECONDARY_COL_NAME],
                                 padding='longest',
                                 truncation=True)
-
