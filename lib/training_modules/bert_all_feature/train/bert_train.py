@@ -1,5 +1,6 @@
 import tensorflow
 from keras.callbacks import TensorBoard
+from keras.optimizers import Adam
 from sklearn.model_selection import KFold
 from tensorflow.python.keras.callbacks import History
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
@@ -123,7 +124,7 @@ class BertTrain:
 
     def __create_compile_model(self):
         model = self.create_bert_classifier_model()
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
+        model.compile(optimizer=Adam(learning_rate=BERT_LEARNING_RATE), loss=self.__loss, metrics=[self.__metrics])
         return model
 
     def prepare_special_ds_for_model(self, model, ds):
