@@ -75,6 +75,7 @@ class BertTrain:
             return self.__simple_fit()
 
     def __simple_fit(self):
+
         model = self.__create_compile_model()
         print("baba")
         tf_train_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[TRAIN])
@@ -123,8 +124,11 @@ class BertTrain:
         return histories, model
 
     def __create_compile_model(self):
+        print('befor model create')
         model = self.create_bert_classifier_model()
+        print('after model create')
         model.compile(optimizer=Adam(learning_rate=BERT_LEARNING_RATE), loss=self.__loss, metrics=[self.__metrics])
+        print('after model compile')
         return model
 
     def prepare_special_ds_for_model(self, model, ds):
