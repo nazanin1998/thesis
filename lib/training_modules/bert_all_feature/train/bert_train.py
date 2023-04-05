@@ -139,15 +139,21 @@ class BertTrain:
             tokenizer=self.__tokenizer,
         )
 
-    def create_bert_classifier_model(self):
-        print(f'num labels {self.__num_labels}')
-        print(f'num id2label {self.__id2label}')
-        print(f'num lable {self.__label2id}')
+    @staticmethod
+    def create_bert_classifier_model():
+        # print(f'num labels {self.__num_labels}')
+        # print(f'num id2label {self.__id2label}')
+        # print(f'num lable {self.__label2id}')
+        # model = TFAutoModelForSequenceClassification.from_pretrained(
+        #     BERT_MODEL_NAME,
+        #     num_labels=self.__num_labels,
+        #     id2label=self.__id2label,
+        #     label2id=self.__label2id
+        # )
+        id2label = {'0': "Rumor", '1': "Non Rumor"}
+        label2id = {val: key for key, val in id2label.items()}
         model = TFAutoModelForSequenceClassification.from_pretrained(
-            BERT_MODEL_NAME,
-            num_labels=self.__num_labels,
-            id2label=self.__id2label,
-            label2id=self.__label2id
+            BERT_MODEL_NAME, num_labels=2, id2label=id2label, label2id=label2id
         )
-        print(f'num lable {self.__label2id}')
+        # print(f'num lable {self.__label2id}')
         return model
