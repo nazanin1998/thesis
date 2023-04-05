@@ -75,15 +75,17 @@ class BertTrain:
 
     def __simple_fit(self):
         model = self.__create_compile_model()
-
+        print("baba")
         tf_train_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[TRAIN])
+        print("baba1")
         tf_validation_dataset = self.prepare_special_ds_for_model(model, self.__encoded_dataset[VALIDATION])
+        print("baba2")
 
         history = model.fit(
             tf_train_dataset,
             validation_data=tf_validation_dataset,
             epochs=BERT_EPOCHS,
-            # callbacks=callbacks,
+            callbacks=[],
             batch_size=BERT_BATCH_SIZE,
             validation_steps=self.__validation_steps,
         )
@@ -111,6 +113,8 @@ class BertTrain:
                 tf_train_dataset,
                 validation_data=tf_validation_dataset,
                 epochs=BERT_EPOCHS_K_FOLD,
+                callbacks=[],
+
                 batch_size=BERT_BATCH_SIZE,
                 # validation_steps=self.__validation_steps,
             )
