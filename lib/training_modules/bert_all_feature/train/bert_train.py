@@ -140,11 +140,14 @@ class BertTrain:
         )
 
     def create_bert_classifier_model(self):
-
+        print(f'num labels {self.__num_labels}')
+        print(f'num id2label {self.__id2label}')
+        print(f'num lable {self.__label2id}')
         model = TFAutoModelForSequenceClassification.from_pretrained(
             BERT_MODEL_NAME,
             num_labels=self.__num_labels,
             id2label=self.__id2label,
             label2id=self.__label2id
         )
+        print(f'num lable {self.__label2id}')
         return model
