@@ -125,7 +125,10 @@ class BertTrain:
 
     def __create_compile_model(self):
         print('befor model create')
-        model = self.create_bert_classifier_model()
+        try:
+            model = self.create_bert_classifier_model()
+        except:
+            print("e")
         print('after model create')
         model.compile(optimizer=Adam(learning_rate=BERT_LEARNING_RATE), loss=self.__loss, metrics=[self.__metrics])
         print('after model compile')
