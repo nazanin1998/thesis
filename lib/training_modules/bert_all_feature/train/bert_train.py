@@ -139,7 +139,6 @@ class BertTrain:
             tokenizer=self.__tokenizer,
         )
 
-
     def create_bert_classifier_model(self):
         print(f'num labels {self.__num_labels}')
         print(f'num id2label {self.__id2label}')

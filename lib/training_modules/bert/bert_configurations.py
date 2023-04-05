@@ -25,5 +25,7 @@ BERT_LEARNING_RATE = 2e-5
 BERT_OPTIMIZER_NAME = 'adam'  # sgd, adam, adamax, adadelta, adagrad
 BERT_SAVE_MODEL_NAME = 'res9_bert'
 BERT_SAVE_MODEL_DIR = './saved_models'
-BERT_MODEL_NAME = "distilbert-base-uncased"
+# BERT_MODEL_NAME = "distilbert-base-uncased"
+BERT_MODEL_NAME = "be3rt-base-uncased"
+
 # BERT_MODEL_NAME = 'small_bert/bert_en_uncased_L-4_H-512_A-8'
