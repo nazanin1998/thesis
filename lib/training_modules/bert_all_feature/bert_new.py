@@ -9,7 +9,7 @@ from transformers.keras_callbacks import PushToHubCallback
 from keras.callbacks import TensorBoard
 from evaluate import load
 
-from lib.constants import PHEME_LABEL_COL_NAME
+from lib.utils.constants import PHEME_LABEL_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_LEARNING_RATE, BERT_BATCH_SIZE
 
 
@@ -98,7 +98,7 @@ class BertNew:
         input_spec, label_spec = tf_train_dataset.element_spec
         print(f'input_spec {input_spec}')
 
-        from transformers.keras_callbacks import KerasMetricCallback
+        # from transformers.keras_callbacks import KerasMetricCallback
         def compute_metrics(predictions, labels):
             decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
             decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)

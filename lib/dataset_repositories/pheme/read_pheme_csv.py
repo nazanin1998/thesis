@@ -1,8 +1,6 @@
-from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
-from lib.training_modules.bert.bert_configurations import BERT_USE_K_FOLD
-from lib.training_modules.read_ds.pheme.save_pheme_csv import get_train_path_for_specified_split_size, \
-    get_val_path_for_specified_split_size, get_test_path_for_specified_split_size, get_k_fold_path
-
+from lib.utils.file_dir_handler import FileDirHandler
+from lib.dataset_repositories.pheme.save_pheme_csv import get_train_path_for_specified_split_size, \
+    get_val_path_for_specified_split_size, get_test_path_for_specified_split_size
 
 class ReadPhemeCsv:
 
@@ -10,13 +8,9 @@ class ReadPhemeCsv:
         self.__train_path = get_train_path_for_specified_split_size()
         self.__val_path = get_val_path_for_specified_split_size()
         self.__test_path = get_test_path_for_specified_split_size()
-        self.__k_fold_path = get_k_fold_path()
 
     def read_csv(self):
         print("\tRead dataset (.csv) ...")
-        if BERT_USE_K_FOLD:
-            total_df = FileDirHandler.read_csv_file(path=self.__k_fold_path)
-            return total_df
 
         train_df = FileDirHandler.read_csv_file(path=self.__train_path)
         val_df = FileDirHandler.read_csv_file(path=self.__val_path)

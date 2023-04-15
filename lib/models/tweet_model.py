@@ -1,7 +1,7 @@
 import numpy
 
 from lib.models.user_model import UserModel
-
+from lib.utils.file_dir_handler import FileDirHandler
 # is_rumour , thread, in_reply_tweet, event, tweet_id, is_source_tweet, in_reply_user, user_id, tweet_length,
 # symbol_count, user_mentions, urls_count, media_count, hashtags_count, retweet_count
 # favorite_count, mentions_count, is_truncated, created, has_smile_emoji, sensitive
@@ -23,7 +23,6 @@ from lib.models.user_model import UserModel
 # user.utc_dist, hasperiod, number_punct, negativewordcount, positivewordcount, capitalratio,
 # contentlength, sentimentscore, Noun, has_url_in_text
 #
-from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
 
 
 class TweetModel:
