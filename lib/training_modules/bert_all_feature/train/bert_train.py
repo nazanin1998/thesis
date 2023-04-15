@@ -3,7 +3,7 @@ from keras.callbacks import TensorBoard
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
 from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
-from transformers.keras_callbacks import KerasMetricCallback
+# from transformers.keras_callbacks import KerasMetricCallback
 from sklearn.model_selection import KFold
 from tensorflow.python.keras.callbacks import History
 from lib.training_modules.base.analysis.base_analysis import log_configurations, get_history_metrics

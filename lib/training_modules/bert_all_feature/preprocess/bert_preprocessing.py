@@ -8,7 +8,7 @@ from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME, BERT_
 
 class BertPreprocessing:
     def __init__(self, train_df, val_df, test_df):
-        self.__dataset = self.convert_splited_df_to_ds_dict(train_df, val_df, test_df)
+        self.__dataset = self.__convert_splitting_df_to_ds_dict(train_df, val_df, test_df)
         self.__tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
         # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
