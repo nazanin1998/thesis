@@ -62,6 +62,7 @@ class BertTrain:
         #     print(f"baby label {labels}")
         #     return metric.compute(predictions=predictions, references=labels)
 
+        
         optimizer = self.get_optimizer_from_conf()
 
         model.compile(optimizer=optimizer, loss=self.__loss, metrics=[self.__metrics])
@@ -153,8 +154,9 @@ class BertTrain:
     def create_classifier_model():
         id2label = {'0': "Rumor", '1': "Non Rumor"}
         label2id = {val: key for key, val in id2label.items()}
-
+        print('before create classifier model')
         model = TFAutoModelForSequenceClassification.from_pretrained(
             BERT_MODEL_NAME, num_labels=2, id2label=id2label, label2id=label2id
         )
+        print('after create classifier model')
         return model
