@@ -16,6 +16,12 @@ def get_optimizer_from_conf():
     elif BERT_OPTIMIZER_NAME == "adagrad":
         return Adagrad(learning_rate=BERT_LEARNING_RATE)
 
+def get_optimizer(self):
+    return create_optimizer(
+        init_lr=BERT_LEARNING_RATE,
+        num_warmup_steps=self.__num_warmup_steps,
+        num_train_steps=self.__num_train_steps
+    )    
 
 def get_sparse_categorical_acc_metric():
     return tensorflow.keras.metrics.SparseCategoricalAccuracy('accuracy', dtype=tensorflow.float32)

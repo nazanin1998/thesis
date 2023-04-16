@@ -54,18 +54,10 @@ class BertTrain:
         log_start_phase(2, 'BERT MODEL STARTED')
         self.log_configuration()
         
-        self.__do_training()
+        history, model = self.__do_training()
         model = self.create_classifier_model()
 
-        tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
-        tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
-
-        optimizer = self.get_optimizer_from_conf()
-
-        model.compile(optimizer=optimizer, loss=self.__loss, metrics=[self.__metrics])
-
-        history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
 
         model.summary()
 
@@ -94,61 +86,25 @@ class BertTrain:
         print(' un implemented error')
         
     def __simple_training(self):
-        model = self.create_classifier_model()
+        model = self.__create_comple_model()
 
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
         tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
-        print('baby after create model')
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
-
+     
         history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
-
-    def get_optimizer(self):
-        return create_optimizer(
-            init_lr=BERT_LEARNING_RATE,
-            num_warmup_steps=self.__num_warmup_steps,
-            num_train_steps=self.__num_train_steps
-        )
-
-    @staticmethod
-    def get_optimizer_from_conf():
-        # optimizer = optimization.create_optimizer(
-        #     init_lr=init_lr,
-        #     num_train_steps=num_train_steps,
-        #     num_warmup_steps=num_warmup_steps,
-        #     optimizer_type='adamw')
-
-        if BERT_OPTIMIZER_NAME == 'adam':
-            return Adam(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "sgd":
-            return SGD(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adamax":
-            return Adamax(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adadelta":
-            return Adadelta(learning_rate=BERT_LEARNING_RATE)
-        elif BERT_OPTIMIZER_NAME == "adagrad":
-            return Adagrad(learning_rate=BERT_LEARNING_RATE)
-
+        return history, model
+ 
+    def __create_comple_model(self):
+        model = self.create_classifier_model()
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
+        return model
+    
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
-        model_name = BERT_MODEL_NAME.split("/")[-1]
-        # push_to_hub_model_id = f"{model_name}-finetuned-{self.__task}"
 
         tensorboard_callback = TensorBoard(log_dir="./text_classification_model_save/logs")
-
-        # push_to_hub_callback = PushToHubCallback(
-        #     output_dir="./text_classification_model_save",
-        #     tokenizer=self.__tokenizer,
-        #     hub_model_id=push_to_hub_model_id,
-        #
-        # )
-        # metric_callback = KerasMetricCallback(
-        #     metric_fn=compute_metrics, eval_dataset=tf_validation_dataset, label_cols=None,
-        # )
         callbacks = [
-            # metric_callback,
             tensorboard_callback,
-            # push_to_hub_callback
         ]
         history = model.fit(
             tf_train_dataset,
@@ -171,7 +127,6 @@ class BertTrain:
     def create_classifier_model(self):
         id2label = {'0': "Rumor", '1': "Non Rumor"}
         label2id = {val: key for key, val in id2label.items()}
-        print('baby1 before create model')
 
         model = TFAutoModelForSequenceClassification.from_pretrained(
             BERT_MODEL_NAME, 
@@ -179,5 +134,5 @@ class BertTrain:
             id2label=id2label, 
             label2id=label2id
         )
-        print('baby1 after create model')
+        
         return model
