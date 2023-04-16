@@ -98,6 +98,7 @@ class BertTrain:
             
             histories.append(history)
         return histories, model
+    
     def __simple_training(self):
         model = self.__create_comple_model()
 
