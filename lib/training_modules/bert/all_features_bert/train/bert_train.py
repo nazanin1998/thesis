@@ -1,3 +1,4 @@
+from lib.training_modules.base.train.base_train import get_optimizer_from_conf, get_sparse_categorical_acc_metric, get_sparse_categorical_cross_entropy
 import tensorflow
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
@@ -5,9 +6,9 @@ from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
 
-from lib.utils.constants import TRAIN, VALIDATION, TEST
+from lib.utils.constants import PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, VALIDATION, TEST
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
-from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_MODEL_NAME, \
+from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_MODEL_NAME, BERT_USE_K_FOLD, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
 
@@ -16,14 +17,34 @@ class BertTrain:
     def __init__(self, encoded_dataset, tokenizer):
         self.__tokenizer = tokenizer
         self.__encoded_dataset = encoded_dataset
+        
         self.__loss = tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.__metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
             'accuracy', dtype=tensorflow.float32)
 
+        self.__num_labels = len(self.__encoded_dataset[TRAIN].unique(PHEME_LABEL_SECONDARY_COL_NAME))
+
+        self.__loss = get_sparse_categorical_cross_entropy()
+        self.__metrics = get_sparse_categorical_acc_metric()
+        self.__optimizer = get_optimizer_from_conf()
+
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
-        self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
         self.__num_train_steps = int(self.__steps_per_epoch * BERT_EPOCHS)
         self.__num_warmup_steps = int(self.__num_train_steps // 10)
+        if BERT_USE_K_FOLD:
+            self.__validation_steps = 0
+        else:
+            self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
+    
+    def log_configuration():
+        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
+        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
+        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
+        
+        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS_K_FOLD if BERT_USE_K_FOLD else BERT_EPOCHS}')
+        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
+        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
+        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
 
     def start(self):
         # batches_per_epoch = len(self.__encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
@@ -31,18 +52,7 @@ class BertTrain:
         # actual_task = "mnli" if self.__task == "mnli-mm" else self.__task
         # metric = load("glue", self.__task)
         log_start_phase(2, 'BERT MODEL STARTED')
-        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
-        # log_phase_desc(f'Preprocess sequence len  : {PREPROCESS_SEQ_LEN}')
-        # log_phase_desc(f'Preprocess batch size    : {PREPROCESS_BATCH_SIZE}')
-        # log_phase_desc(f'Preprocess buffer size   : {PREPROCESS_BUFFER_SIZE}')
-        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
-        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
-        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS}')
-        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
-        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
-        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
-        # log_phase_desc(f'Assume only source tweets: {PREPROCESS_ONLY_SOURCE_TWEET}')
-
+        self.log_configuration()
         model = self.create_classifier_model()
 
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
