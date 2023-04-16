@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from lib import constants
+from lib.utils import constants
 from lib.preprocessing.simple_preprocessing.simple_preprocess import SimplePreprocess
 from lib.training_modules.basic_reading_ds.basic_reading_ds import my_train_val_test_split
 from lib.training_modules.bert.bert_configurations import PREPROCESS_ONLY_SOURCE_TWEET, BERT_TEST_SIZE, BERT_TRAIN_SIZE, \

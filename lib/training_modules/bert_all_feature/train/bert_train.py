@@ -5,7 +5,7 @@ from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
 
-from lib.constants import TRAIN, VALIDATION, TEST
+from lib.utils.constants import TRAIN, VALIDATION, TEST
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_MODEL_NAME, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME

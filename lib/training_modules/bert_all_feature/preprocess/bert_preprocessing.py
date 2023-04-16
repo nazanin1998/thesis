@@ -1,7 +1,7 @@
 from datasets import Dataset, DatasetDict
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
 
-from lib.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
+from lib.utils.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
     VALIDATION, TEST, PHEME_TOTAL_TEXT_SECONDARY_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME
 from lib.training_modules.bert_all_feature.preprocess.basic_preprocessing import BasicPreprocessing

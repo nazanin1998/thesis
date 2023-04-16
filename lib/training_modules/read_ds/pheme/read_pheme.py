@@ -1,5 +1,5 @@
-from lib.training_modules.basic_reading_ds.file_dir_handler import FileDirHandler
-import lib.constants as constants
+from lib.utils.file_dir_handler import FileDirHandler
+import lib.utils.constants as constants
 from lib.training_modules.bert.bert_configurations import BERT_TRAIN_SIZE, BERT_VAL_SIZE, BERT_TEST_SIZE, \
     BERT_USE_K_FOLD, BERT_K_FOLD
 from lib.training_modules.read_ds.pheme.read_pheme_csv import ReadPhemeCsv

@@ -9,7 +9,7 @@ from transformers.keras_callbacks import PushToHubCallback
 from keras.callbacks import TensorBoard
 from evaluate import load
 
-from lib.constants import PHEME_LABEL_COL_NAME
+from lib.utils.constants import PHEME_LABEL_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_LEARNING_RATE, BERT_BATCH_SIZE
 
 

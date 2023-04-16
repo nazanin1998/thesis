@@ -8,7 +8,7 @@ import tensorflow as tf
 from keras.layers import Reshape
 from tensorflow_addons.layers import CRF
 
-from lib.constants import PHEME_LABEL_COL_NAME
+from lib.utils.constants import PHEME_LABEL_COL_NAME
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bilstm.bilstm_configurations import BI_LSTM_BATCH_SIZE, BI_LSTM_EPOCH, BI_LSTM_OPTIMIZER_NAME, \
     BI_LSTM_LEARNING_RATE, BI_LSTM_DROPOUT_RATE, BI_LSTM_BUFFER_SIZE
