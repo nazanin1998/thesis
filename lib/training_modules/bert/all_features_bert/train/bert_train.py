@@ -50,12 +50,9 @@ class BertTrain:
         log_phase_desc(f'Num labels               : {self.__num_labels}')
 
     def start(self):
-        # batches_per_epoch = len(self.__encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
-        # total_train_steps = int(batches_per_epoch * BERT_EPOCHS)
-        # actual_task = "mnli" if self.__task == "mnli-mm" else self.__task
-        # metric = load("glue", self.__task)
         log_start_phase(2, 'BERT MODEL STARTED')
         self.log_configuration()
+        
         model = self.create_classifier_model()
 
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
@@ -165,12 +162,14 @@ class BertTrain:
             tokenizer=self.__tokenizer,
         )
 
-    @staticmethod
-    def create_classifier_model():
+    def create_classifier_model(self):
         id2label = {'0': "Rumor", '1': "Non Rumor"}
         label2id = {val: key for key, val in id2label.items()}
 
         model = TFAutoModelForSequenceClassification.from_pretrained(
-            BERT_MODEL_NAME, num_labels=2, id2label=id2label, label2id=label2id
+            BERT_MODEL_NAME, 
+            num_labels=self.__num_labels, 
+            id2label=id2label, 
+            label2id=label2id
         )
         return model
