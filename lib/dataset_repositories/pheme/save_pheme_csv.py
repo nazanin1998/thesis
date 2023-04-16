@@ -86,10 +86,6 @@ def get_directory_for_specified_split_size():
     return constants.PHEME_CSV_DIR + specified_split_dir
 
 
-def get_k_fold_path():
-    return constants.PHEME_CSV_DIR + "/" + str(BERT_K_FOLD) + constants.PHEME_K_FOLD_CSV_NAME
-
-
 def get_train_path_for_specified_split_size():
     return get_directory_for_specified_split_size() + "/" + constants.PHEME_TRAIN_CSV_NAME
 

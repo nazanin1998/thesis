@@ -24,9 +24,6 @@ def print_event_summery_in_table(events):
 
 class ReadPhemeJson:
     def __init__(self):
-        self.__train_path = get_train_path_for_specified_split_size()
-        self.__val_path = get_val_path_for_specified_split_size()
-        self.__test_path = get_test_path_for_specified_split_size()
         self.__pheme_json_dir = constants.PHEME_JSON_DIR
 
     def read_json(self):
