@@ -1,11 +1,7 @@
 import tensorflow
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
-from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
-# from transformers.keras_callbacks import KerasMetricCallback
-from sklearn.model_selection import KFold
-# from tensorflow.python.keras.callbacks import History
 from lib.training_modules.base.analysis.base_analysis import log_configurations, get_history_metrics
 from lib.training_modules.base.train.base_train import get_optimizer_from_conf, get_sparse_categorical_acc_metric, \
     get_sparse_categorical_cross_entropy
@@ -29,8 +25,10 @@ class BertTrain:
         self.__loss = tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.__metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
             'accuracy', dtype=tensorflow.float32)
+       
         self.__num_labels = len(self.__encoded_dataset[TRAIN].unique(PHEME_LABEL_SECONDARY_COL_NAME))
         self.__optimizer = get_optimizer_from_conf()
+       
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
         self.__num_train_steps = int(self.__steps_per_epoch * BERT_EPOCHS)
         self.__num_warmup_steps = int(self.__num_train_steps // 10)
