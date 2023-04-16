@@ -4,11 +4,15 @@ from matplotlib import pyplot as plt
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS
 from lib.utils.log.logger import log_phase_desc
 
+def compute_max_mean(items):
+    mean_of = sum(items) / len(items)
+    max_of = max(items)
+    return max_of, mean_of
 
 class BertModelAnalysis:
-    def __init__(self, model, history):
+    def __init__(self, model, histories):
         self.__model = model
-        self.__history = history
+        self.__histories = histories
 
     def plot_bert_model(self):
         try:
@@ -40,16 +44,39 @@ class BertModelAnalysis:
         plt.legend(loc='lower right')
         plt.savefig("plot_bert.png")
 
-    def evaluation(self, test_tensor_dataset):
-
-        train_loss, validation_loss, train_acc, validation_acc = self.get_history_metrics()
-        test_loss, test_accuracy = self.__model.evaluate(test_tensor_dataset)
-
-        log_phase_desc(f'Training   => Accuracy: {train_acc}, Loss: {train_loss}')
-        log_phase_desc(f'Validation => Accuracy: {validation_acc}, Loss: {validation_loss}')
-        log_phase_desc(f'Test       => Accuracy: {test_accuracy}, Loss: {test_loss}')
-
-        return train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy
+    def evaluation(self, test_tensor_dataset= None):
+        fold_index = 0
+        
+        train_acc_list = []
+        validation_acc_list = []
+        train_loss_list = []
+        validation_loss_list = []
+        
+        for history in self.__histories:
+            
+            fold_index += 1
+            print(f'FOLD {fold_index}')
+            
+            train_loss, validation_loss, train_acc, validation_acc = self.get_history_metrics(history)
+            
+            train_acc_list.extend(train_acc)
+            train_loss_list.extend(train_loss)
+            validation_acc_list.extend(validation_acc)
+            validation_loss_list.extend(validation_loss)
+            
+        train_acc_max, train_acc_mean = compute_max_mean(train_acc_list)
+        train_loss_max, train_loss_mean = compute_max_mean(train_loss_list)
+        validation_acc_max, validation_acc_mean = compute_max_mean(validation_acc_list)
+        validation_loss_max, validation_loss_mean = compute_max_mean(validation_loss_list)
+        
+        log_phase_desc(f'Train       => Accuracy: {train_acc_list}, Loss: {train_loss_list}')
+        log_phase_desc(f'Test        => Accuracy: {validation_acc_list}, Loss: {validation_loss_list}\n')
+        log_phase_desc(f'Train(MEAN) => Accuracy: {train_acc_mean}, Loss: {train_loss_mean}')
+        log_phase_desc(f'Train(MAX) => Accuracy: {train_acc_max}, Loss: {train_loss_max}\n')
+        log_phase_desc(f'Test (MEAN) => Accuracy: {validation_acc_mean}, Loss: {validation_loss_mean}')
+        log_phase_desc(f'Test (MAX) => Accuracy: {validation_acc_max}, Loss: {validation_loss_max}')
+     
+        return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max
 
     def get_history_metrics(self):
         history_dict = self.__history.history
