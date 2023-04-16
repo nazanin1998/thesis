@@ -36,7 +36,7 @@ class BertTrain:
         else:
             self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
     
-    def log_configuration():
+    def log_configuration(self):
         log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
         log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
         log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
@@ -45,6 +45,9 @@ class BertTrain:
         # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
         log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
         log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
+        log_phase_desc(f'Bert loss                : {self.__loss}')
+        log_phase_desc(f'Bert metrics             : {self.__metrics}')
+        log_phase_desc(f'Num labels               : {self.__num_labels}')
 
     def start(self):
         # batches_per_epoch = len(self.__encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
