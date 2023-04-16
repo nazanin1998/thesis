@@ -8,7 +8,6 @@ import tensorflow_text as text
 import tensorflow as tf
 from pandas import DataFrame
 
-from lib.training_modules.bert.preprocess.bert_preprocessing_impl import BertPreprocessingImpl
 
 read_pheme_ds()
 def bert_preprocess(new_text):

@@ -5,7 +5,7 @@ from lib.models.event_model import EventModel
 from lib.models.tweet_model import TweetModel
 from lib.models.tweet_tree_model import TweetTreeModel
 from lib.utils.file_dir_handler import FileDirHandler
-from lib.training_modules.read_ds.pheme.save_pheme_csv import get_train_path_for_specified_split_size, \
+from lib.dataset_repositories.pheme.save_pheme_csv import get_train_path_for_specified_split_size, \
     get_val_path_for_specified_split_size, get_test_path_for_specified_split_size
 
 
