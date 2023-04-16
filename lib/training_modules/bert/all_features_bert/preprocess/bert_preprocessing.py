@@ -1,15 +1,15 @@
-from datasets import Dataset, DatasetDict
-from lib.training_modules.base.preprocess.base_preprocess import convert_df_to_ds
-from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
+from datasets import DatasetDict
+from lib.training_modules.base.preprocess.base_preprocess import convert_df_to_ds, merge_3_dataframes
+from transformers import AutoTokenizer
 
 from lib.utils.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
     VALIDATION, TEST, PHEME_TOTAL_TEXT_SECONDARY_COL_NAME
-from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME
+from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME, BERT_USE_K_FOLD
 
 
 class BertPreprocessing:
     def __init__(self, train_df, val_df, test_df):
-        self.__dataset = self.convert_splited_df_to_ds_dict(train_df, val_df, test_df)
+        self.__dataset = self.__convert_splited_df_to_ds_dict(train_df, val_df, test_df)
         self.__tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
         # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
@@ -21,11 +21,16 @@ class BertPreprocessing:
         # ds = ds.class_encode_column(PHEME_LABEL_SECONDARY_COL_NAME)
         return ds
 
-    def convert_splited_df_to_ds_dict(self, train_df, val_df, test_df):
+    def __convert_splited_df_to_ds_dict(self, train_df, val_df, test_df):
         dataset = DatasetDict()
-        dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(train_df)
-        dataset[VALIDATION] = self.convert_df_to_ds_and_prepare_features_cols(val_df)
-        dataset[TEST] = self.convert_df_to_ds_and_prepare_features_cols(test_df)
+
+        if BERT_USE_K_FOLD:
+            df = merge_3_dataframes(train_df, val_df, test_df)
+            dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(df)
+        else:
+            dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(train_df)
+            dataset[VALIDATION] = self.convert_df_to_ds_and_prepare_features_cols(val_df)
+            dataset[TEST] = self.convert_df_to_ds_and_prepare_features_cols(test_df)
 
         return dataset
 
