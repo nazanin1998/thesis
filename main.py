@@ -1,9 +1,10 @@
 
-from lib.training_modules.bert_all_feature.preprocess.bert_preprocessing import \
+import os
+from lib.training_modules.bert.all_features_bert.preprocess.bert_preprocessing import \
     BertPreprocessing
-from lib.training_modules.bert_all_feature.train.bert_train import BertTrain
+from lib.training_modules.bert.all_features_bert.train.bert_train import BertTrain
 from lib.dataset_repositories.pheme.read_pheme import read_pheme
-
+from lib.training_modules.bert.bert_configurations import ENABLE_GPU
 r"""
     1- Read dataset...
     2- Do preprocess on it
@@ -11,7 +12,8 @@ r"""
     4- Run Bert
 """
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+if not ENABLE_GPU:
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 train_df, val_df, test_df = read_pheme()
@@ -21,8 +23,9 @@ train_df, val_df, test_df = read_pheme()
 # BertModelImpl(train_tensor_dataset=train_tensor_dataset, val_tensor_dataset=val_tensor_dataset,
 #               test_tensor_dataset=test_tensor_dataset, num_classes=label_classes, train_len=train_len,
 #               validation_len=validation_len, test_len=test_len, bert_preprocess_model=bert_preprocess_model).start()
-bertP = BertPreprocessing(train_df, val_df, test_df)
-encoded_dataset, tokenizer = bertP.start()
+bert_preprocess = BertPreprocessing(train_df, val_df, test_df)
+encoded_dataset, tokenizer = bert_preprocess.start()
+
 BertTrain(encoded_dataset, tokenizer).start()
 # BertNew(train_df, val_df, test_df).start()
 # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len, bi_lstm_preprocess_model = \
