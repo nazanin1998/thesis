@@ -78,8 +78,8 @@ class BertModelAnalysis:
      
         return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max
 
-    def get_history_metrics(self):
-        history_dict = self.__history.history
+    def get_history_metrics(self, hist):
+        history_dict = hist.history
 
         train_loss = history_dict['loss']
         validation_loss = history_dict['val_loss']
