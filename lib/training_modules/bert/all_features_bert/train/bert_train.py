@@ -55,7 +55,6 @@ class BertTrain:
         self.log_configuration()
         
         history, model = self.__do_training()
-        model = self.create_classifier_model()
 
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
 
