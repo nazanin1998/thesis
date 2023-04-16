@@ -31,6 +31,7 @@ class BertTrain:
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
         self.__num_train_steps = int(self.__steps_per_epoch * BERT_EPOCHS)
         self.__num_warmup_steps = int(self.__num_train_steps // 10)
+        
         if BERT_USE_K_FOLD:
             self.__validation_steps = 0
         else:
@@ -53,27 +54,12 @@ class BertTrain:
         log_start_phase(2, 'BERT MODEL STARTED')
         self.log_configuration()
         
+        self.__do_training()
         model = self.create_classifier_model()
 
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
         tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
-
-        # def compute_metrics(predictions, labels):
-        #     decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
-        #     decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)
-        #     result = metric.compute(predictions=decoded_predictions, references=decoded_labels)
-        #     return {key: value.mid.fmeasure * 100 for key, value in result.items()}
-
-        # def compute_metrics(eval_predictions):
-        #
-        #     predictions, labels = eval_predictions
-        #     if self.__task != "stsb":
-        #         predictions = np.argmax(predictions, axis=1)
-        #     else:
-        #         predictions = predictions[:, 0]
-        #     print(f"baby label {labels}")
-        #     return metric.compute(predictions=predictions, references=labels)
 
         optimizer = self.get_optimizer_from_conf()
 
@@ -97,6 +83,26 @@ class BertTrain:
 
         log_end_phase(3, 'BERT ON TWEET TEXT')
         log_line()
+
+    def __do_training(self):
+        if BERT_USE_K_FOLD:
+            return self.__k_fold_training()
+        else:
+            return self.__simple_training()
+    
+    def __k_fold_training(self):
+        print(' un implemented error')
+        
+    def __simple_training(self):
+        model = self.create_classifier_model()
+
+        tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
+        tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
+        tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
+        print('baby after create model')
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
+
+        history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
 
     def get_optimizer(self):
         return create_optimizer(
@@ -165,6 +171,7 @@ class BertTrain:
     def create_classifier_model(self):
         id2label = {'0': "Rumor", '1': "Non Rumor"}
         label2id = {val: key for key, val in id2label.items()}
+        print('baby1 before create model')
 
         model = TFAutoModelForSequenceClassification.from_pretrained(
             BERT_MODEL_NAME, 
@@ -172,4 +179,5 @@ class BertTrain:
             id2label=id2label, 
             label2id=label2id
         )
+        print('baby1 after create model')
         return model
