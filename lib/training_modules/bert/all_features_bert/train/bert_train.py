@@ -51,14 +51,16 @@ class BertTrain:
         analyser = BertModelAnalysis(model=model, histories=histories)
         analyser.plot_bert_model()
 
-        train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy = analyser.evaluation(
+        train_acc_list, validation_acc_list, train_loss_list, \
+            validation_loss_list, validation_acc_mean, validation_loss_mean, \
+                validation_acc_max, validation_loss_max = analyser.evaluation(
             test_tensor_dataset=tf_test_dataset)
 
         analyser.plot_bert_evaluation_metrics(
-            train_acc=train_acc,
-            val_acc=validation_acc,
-            train_loss=train_loss,
-            val_loss=validation_loss)
+            train_acc=train_acc_list,
+            val_acc=validation_acc_list,
+            train_loss=train_loss_list,
+            val_loss=validation_loss_list)
 
         log_end_phase(3, 'BERT ON TWEET TEXT')
         log_line()
