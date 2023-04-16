@@ -2,7 +2,7 @@
 from lib.training_modules.bert_all_feature.preprocess.bert_preprocessing import \
     BertPreprocessing
 from lib.training_modules.bert_all_feature.train.bert_train import BertTrain
-from lib.training_modules.read_ds.pheme.read_pheme import read_pheme
+from lib.dataset_repositories.pheme.read_pheme import read_pheme
 
 r"""
     1- Read dataset...
