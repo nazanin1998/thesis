@@ -39,8 +39,12 @@ class BertTrain:
     def start(self):
         log_start_phase(1, 'BERT MODEL STARTED')
         log_configurations()
-        model = self.create_classifier_model()
-
+        # model = self.create_classifier_model()
+        id2label = {'0': "Rumor", '1': "Non Rumor"}
+        label2id = {val: key for key, val in id2label.items()}
+        model = TFAutoModelForSequenceClassification.from_pretrained(
+            BERT_MODEL_NAME, num_labels=2, id2label=id2label, label2id=label2id
+        )
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
         tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
