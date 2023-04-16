@@ -4,6 +4,7 @@ from lib.training_modules.bert.all_features_bert.preprocess.bert_preprocessing i
     BertPreprocessing
 from lib.training_modules.bert.all_features_bert.train.bert_train import BertTrain
 from lib.dataset_repositories.pheme.read_pheme import read_pheme
+from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import ENABLE_GPU
 r"""
     1- Read dataset...
@@ -11,7 +12,7 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
-
+BertModelAnalysis("", '').plot_bert_evaluation_metrics('','','','')
 if not ENABLE_GPU:
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 

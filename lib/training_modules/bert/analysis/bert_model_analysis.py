@@ -1,7 +1,7 @@
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_USE_K_FOLD
+from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_USE_K_FOLD
 from lib.utils.log.logger import log_phase_desc
 
 def compute_max_mean(items):
@@ -22,22 +22,29 @@ class BertModelAnalysis:
 
     @staticmethod
     def plot_bert_evaluation_metrics(train_acc, val_acc, train_loss, val_loss):
+        train_acc = [0.7680160403251648, 0.8658807873725891]
+        train_loss = [0.4684535264968872, 0.3006138503551483]
+        val_acc= [0.8062499761581421, 0.8427083492279053]
+        val_loss= [0.4100704491138458, 0.373971164226532]
+
+        
         fig = plt.figure(figsize=(10, 6))
         fig.tight_layout()
-
+        
+        epochs=len(train_acc)
         plt.subplot(2, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
-        plt.plot(BERT_EPOCHS, train_loss, 'r', label='Training loss')
-        plt.plot(BERT_EPOCHS, val_loss, 'b', label='Validation loss')
+        plt.plot(epochs, train_loss, 'r', label='Training loss')
+        plt.plot(epochs, val_loss, 'b', label='Validation loss')
         plt.title('Training and validation loss')
         # plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
 
         plt.subplot(2, 1, 2)
-        plt.plot(BERT_EPOCHS, train_acc, 'r', label='Training acc')
-        plt.plot(BERT_EPOCHS, val_acc, 'b', label='Validation acc')
+        plt.plot(epochs, train_acc, 'r', label='Training acc')
+        plt.plot(epochs, val_acc, 'b', label='Validation acc')
         plt.title('Training and validation accuracy')
         plt.xlabel('Epochs')
         plt.ylabel('Accuracy')
