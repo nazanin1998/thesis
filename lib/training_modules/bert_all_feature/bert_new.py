@@ -1,11 +1,7 @@
-import numpy as np
-import pandas as pd
 import tensorflow
 import tensorflow as tf
-from datasets import Dataset, DatasetDict, load_metric
-from transformers import BertForSequenceClassification, BertForNextSentencePrediction, \
-    AutoModelForSequenceClassification, TFAutoModelForSequenceClassification, create_optimizer, AutoTokenizer
-from transformers.keras_callbacks import PushToHubCallback
+from datasets import Dataset, DatasetDict
+from transformers import BertForSequenceClassification, TFAutoModelForSequenceClassification, create_optimizer, AutoTokenizer
 from keras.callbacks import TensorBoard
 from evaluate import load
 
@@ -15,9 +11,10 @@ from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_LEAR
 
 class BertNew:
     def __init__(self, train_df, val_df, test_df):
-        self.__train_df = train_df
-        self.__val_df = val_df
-        self.__test_df = test_df
+        
+        self.__dataset = DatasetDict()
+        self.__task = "cola"
+        self.__model_checkpoint = "distilbert-base-uncased"
         self.GLUE_TASKS = [
             "cola",
             "mnli",
@@ -30,8 +27,6 @@ class BertNew:
             "stsb",
             "wnli",
         ]
-        self.__task = "cola"
-        self.__model_checkpoint = "distilbert-base-uncased"
 
         self.__train_ds = Dataset.from_pandas(train_df)
         self.__val_ds = Dataset.from_pandas(val_df)
@@ -40,12 +35,6 @@ class BertNew:
         self.__train_ds = self.__train_ds.rename_column(PHEME_LABEL_COL_NAME, 'label')
         self.__val_ds = self.__val_ds.rename_column(PHEME_LABEL_COL_NAME, 'label')
         self.__test_ds = self.__test_ds.rename_column(PHEME_LABEL_COL_NAME, 'label')
-
-        # self.__train_ds = self.__train_ds.class_encode_column('label')
-        # self.__val_ds = self.__val_ds.class_encode_column('label')
-        # self.__test_ds = self.__test_ds.class_encode_column('label')
-
-        self.__dataset = DatasetDict()
 
         self.__dataset['train'] = self.__train_ds
         self.__dataset['validation'] = self.__val_ds
@@ -98,12 +87,11 @@ class BertNew:
         input_spec, label_spec = tf_train_dataset.element_spec
         print(f'input_spec {input_spec}')
 
-        # from transformers.keras_callbacks import KerasMetricCallback
-        def compute_metrics(predictions, labels):
-            decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
-            decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)
-            result = metric.compute(predictions=decoded_predictions, references=decoded_labels)
-            return {key: value.mid.fmeasure * 100 for key, value in result.items()}
+        # def compute_metrics(predictions, labels):
+        #     decoded_predictions = self.__tokenizer.batch_decode(predictions, skip_special_tokens=True)
+        #     decoded_labels = self.__tokenizer.batch_decode(labels, skip_special_tokens=True)
+        #     result = metric.compute(predictions=decoded_predictions, references=decoded_labels)
+        #     return {key: value.mid.fmeasure * 100 for key, value in result.items()}
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         metrics = tf.keras.metrics.SparseCategoricalAccuracy(
             'accuracy', dtype=tf.float32)

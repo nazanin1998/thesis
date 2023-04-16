@@ -1,6 +1,5 @@
-from datasets import Dataset, DatasetDict
-from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
-
+from datasets import DatasetDict
+from transformers import AutoTokenizer
 from lib.training_modules.base.preprocess.base_preprocess import convert_df_to_ds, merge_3_dataframes
 from lib.utils.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
     VALIDATION, TEST, PHEME_TOTAL_TEXT_SECONDARY_COL_NAME
@@ -24,6 +23,7 @@ class BertPreprocessing:
         dataset = DatasetDict()
         if BERT_USE_K_FOLD:
             df = merge_3_dataframes(train_df, val_df, test_df)
+            dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(df)
         else:
             dataset[TRAIN] = self.convert_df_to_ds_and_prepare_features_cols(train_df)
             dataset[VALIDATION] = self.convert_df_to_ds_and_prepare_features_cols(val_df)

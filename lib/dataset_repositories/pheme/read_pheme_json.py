@@ -5,9 +5,7 @@ from lib.models.event_model import EventModel
 from lib.models.tweet_model import TweetModel
 from lib.models.tweet_tree_model import TweetTreeModel
 from lib.utils.file_dir_handler import FileDirHandler
-from lib.dataset_repositories.pheme.save_pheme_csv import get_train_path_for_specified_split_size, \
-    get_val_path_for_specified_split_size, get_test_path_for_specified_split_size
-    
+
     
 def print_event_summery_in_table(events):
     index = 0
@@ -24,9 +22,6 @@ def print_event_summery_in_table(events):
 
 class ReadPhemeJson:
     def __init__(self):
-        self.__train_path = get_train_path_for_specified_split_size()
-        self.__val_path = get_val_path_for_specified_split_size()
-        self.__test_path = get_test_path_for_specified_split_size()
         self.__pheme_json_dir = constants.PHEME_JSON_DIR
 
     def read_json(self):
