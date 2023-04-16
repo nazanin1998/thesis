@@ -53,7 +53,7 @@ class BertTrain:
 
         train_acc_list, validation_acc_list, train_loss_list, \
             validation_loss_list, validation_acc_mean, validation_loss_mean, \
-                validation_acc_max, validation_loss_max = analyser.evaluation(
+                validation_acc_max, validation_loss_max, test_loss, test_accuracy = analyser.evaluation(
             test_tensor_dataset=tf_test_dataset)
 
         analyser.plot_bert_evaluation_metrics(

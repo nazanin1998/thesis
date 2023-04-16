@@ -1,7 +1,7 @@
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-from lib.training_modules.bert.bert_configurations import BERT_EPOCHS
+from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_USE_K_FOLD
 from lib.utils.log.logger import log_phase_desc
 
 def compute_max_mean(items):
@@ -44,7 +44,7 @@ class BertModelAnalysis:
         plt.legend(loc='lower right')
         plt.savefig("plot_bert.png")
 
-    def evaluation(self, test_tensor_dataset= None):
+    def evaluation(self, test_tensor_dataset = None):
         fold_index = 0
         
         train_acc_list = []
@@ -55,7 +55,6 @@ class BertModelAnalysis:
         for history in self.__histories:
             
             fold_index += 1
-            print(f'FOLD {fold_index}')
             
             train_loss, validation_loss, train_acc, validation_acc = self.get_history_metrics(history)
             
@@ -68,15 +67,20 @@ class BertModelAnalysis:
         train_loss_max, train_loss_mean = compute_max_mean(train_loss_list)
         validation_acc_max, validation_acc_mean = compute_max_mean(validation_acc_list)
         validation_loss_max, validation_loss_mean = compute_max_mean(validation_loss_list)
+
+        log_phase_desc(f'Train             => Accuracy: {train_acc_list}, Loss: {train_loss_list}')
+        log_phase_desc(f'Validation        => Accuracy: {validation_acc_list}, Loss: {validation_loss_list}\n')
+        log_phase_desc(f'Train(MEAN)       => Accuracy: {train_acc_mean}, Loss: {train_loss_mean}')
+        log_phase_desc(f'Train(MAX)        => Accuracy: {train_acc_max}, Loss: {train_loss_max}\n')
+        log_phase_desc(f'Validation (MEAN) => Accuracy: {validation_acc_mean}, Loss: {validation_loss_mean}')
+        log_phase_desc(f'Validation (MAX)  => Accuracy: {validation_acc_max}, Loss: {validation_loss_max}')
         
-        log_phase_desc(f'Train       => Accuracy: {train_acc_list}, Loss: {train_loss_list}')
-        log_phase_desc(f'Test        => Accuracy: {validation_acc_list}, Loss: {validation_loss_list}\n')
-        log_phase_desc(f'Train(MEAN) => Accuracy: {train_acc_mean}, Loss: {train_loss_mean}')
-        log_phase_desc(f'Train(MAX) => Accuracy: {train_acc_max}, Loss: {train_loss_max}\n')
-        log_phase_desc(f'Test (MEAN) => Accuracy: {validation_acc_mean}, Loss: {validation_loss_mean}')
-        log_phase_desc(f'Test (MAX) => Accuracy: {validation_acc_max}, Loss: {validation_loss_max}')
-     
-        return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max
+        test_loss, test_accuracy =0,0
+        if not BERT_USE_K_FOLD:
+            test_loss, test_accuracy = self.__model.evaluate(test_tensor_dataset)
+            log_phase_desc(f'Test              => Accuracy: {test_accuracy}, Loss: {test_loss}')
+        
+        return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
 
     def get_history_metrics(self, hist):
         history_dict = hist.history
