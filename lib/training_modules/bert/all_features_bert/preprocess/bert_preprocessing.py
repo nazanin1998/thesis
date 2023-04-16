@@ -1,22 +1,21 @@
 from datasets import Dataset, DatasetDict
+from lib.training_modules.base.preprocess.base_preprocess import convert_df_to_ds
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
 
 from lib.utils.constants import PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, \
     VALIDATION, TEST, PHEME_TOTAL_TEXT_SECONDARY_COL_NAME
 from lib.training_modules.bert.bert_configurations import BERT_MODEL_NAME
-from lib.training_modules.bert_all_feature.preprocess.basic_preprocessing import BasicPreprocessing
 
 
 class BertPreprocessing:
     def __init__(self, train_df, val_df, test_df):
-        self.__basic_preprocess = BasicPreprocessing()
         self.__dataset = self.convert_splited_df_to_ds_dict(train_df, val_df, test_df)
         self.__tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_NAME)
         # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
     def convert_df_to_ds_and_prepare_features_cols(self, df):
         df = df[[PHEME_TOTAL_TEXT_SECONDARY_COL_NAME, PHEME_LABEL_COL_NAME]]
-        ds = self.__basic_preprocess.convert_df_to_ds(df)
+        ds = convert_df_to_ds(df)
         ds = ds.rename_column(PHEME_LABEL_COL_NAME, PHEME_LABEL_SECONDARY_COL_NAME)
 
         # ds = ds.class_encode_column(PHEME_LABEL_SECONDARY_COL_NAME)

@@ -1,4 +1,5 @@
 from sklearn.model_selection import train_test_split
+from datasets import Dataset
 
 from lib.training_modules.bert.bert_configurations import PREPROCESS_DO_SHUFFLING
 
@@ -17,3 +18,8 @@ def my_train_val_test_split(x, y, train_size, val_size, test_size):
                                                     stratify=y_test_val,
                                                     )
     return x_train, x_val, x_test, y_train, y_val, y_test
+
+
+
+def convert_df_to_ds(df):
+    return Dataset.from_pandas(df)
