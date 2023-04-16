@@ -48,7 +48,7 @@ class BertTrain:
 
         model.summary()
 
-        analyser = BertModelAnalysis(model=model, history=histories)
+        analyser = BertModelAnalysis(model=model, histories=histories)
         analyser.plot_bert_model()
 
         train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy = analyser.evaluation(
