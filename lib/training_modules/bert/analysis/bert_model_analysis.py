@@ -31,20 +31,24 @@ class BertModelAnalysis:
         fig = plt.figure(figsize=(10, 6))
         fig.tight_layout()
         
-        epochs=len(train_acc)
+        x_points = []
+        for i in range (1, len(train_acc)+1):
+           x_points.append(i)
+            
+
         plt.subplot(2, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
-        plt.plot(epochs, train_loss, 'r', label='Training loss')
-        plt.plot(epochs, val_loss, 'b', label='Validation loss')
+        plt.plot(x_points, train_loss, 'r', label='Training loss')
+        plt.plot(x_points, val_loss, 'b', label='Validation loss')
         plt.title('Training and validation loss')
         # plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
 
         plt.subplot(2, 1, 2)
-        plt.plot(epochs, train_acc, 'r', label='Training acc')
-        plt.plot(epochs, val_acc, 'b', label='Validation acc')
+        plt.plot(x_points, train_acc, 'r', label='Training acc')
+        plt.plot(x_points, val_acc, 'b', label='Validation acc')
         plt.title('Training and validation accuracy')
         plt.xlabel('Epochs')
         plt.ylabel('Accuracy')
