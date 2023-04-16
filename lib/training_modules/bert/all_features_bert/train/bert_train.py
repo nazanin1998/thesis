@@ -5,10 +5,10 @@ from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
 from sklearn.metrics._scorer import metric
 from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
-
+from sklearn.model_selection import KFold
 from lib.utils.constants import PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, VALIDATION, TEST
 from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
-from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_MODEL_NAME, BERT_USE_K_FOLD, \
+from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_K_FOLD, BERT_MODEL_NAME, BERT_USE_K_FOLD, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
 
@@ -37,32 +37,20 @@ class BertTrain:
         else:
             self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
     
-    def log_configuration(self):
-        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
-        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
-        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
-        
-        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS_K_FOLD if BERT_USE_K_FOLD else BERT_EPOCHS}')
-        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
-        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
-        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
-        log_phase_desc(f'Bert loss                : {self.__loss}')
-        log_phase_desc(f'Bert metrics             : {self.__metrics}')
-        log_phase_desc(f'Num labels               : {self.__num_labels}')
 
     def start(self):
         log_start_phase(2, 'BERT MODEL STARTED')
         self.log_configuration()
         
-        history, model = self.__do_training()
+        histories, model = self.__do_training()
 
         tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
 
         model.summary()
 
-        analyser = BertModelAnalysis(model=model, history=history)
+        analyser = BertModelAnalysis(model=model, history=histories)
         analyser.plot_bert_model()
-        # acc, val_acc, loss, val_loss, first_loss, accuracy \
+
         train_acc, validation_acc, train_loss, validation_loss, test_loss, test_accuracy = analyser.evaluation(
             test_tensor_dataset=tf_test_dataset)
 
@@ -82,17 +70,40 @@ class BertTrain:
             return self.__simple_training()
     
     def __k_fold_training(self):
-        print(' un implemented error')
+        kf = KFold(n_splits=BERT_K_FOLD, shuffle=True)
         
+        histories = []
+        fold_index = 0
+        
+        model = None
+        for train_index, test_index in kf.split(self.__encoded_dataset[TRAIN]):
+            fold_index += 1
+
+            model = self.__create_comple_model()
+
+            train_ds = self.__encoded_dataset[TRAIN].select(train_index)
+            test_ds = self.__encoded_dataset[TRAIN].select(test_index)
+
+            tf_train_dataset = self.prepare_ds(model, train_ds)
+            tf_validation_dataset = self.prepare_ds(model, test_ds)
+
+            history = model.fit(
+                tf_train_dataset,
+                validation_data=tf_validation_dataset,
+                epochs=BERT_EPOCHS_K_FOLD,
+                batch_size=BERT_BATCH_SIZE,
+            )
+            
+            histories.append(history)
+        return histories, model
     def __simple_training(self):
         model = self.__create_comple_model()
 
         tf_train_dataset = self.prepare_ds(model, self.__encoded_dataset[TRAIN])
         tf_validation_dataset = self.prepare_ds(model, self.__encoded_dataset[VALIDATION])
-        tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
      
         history = self.__fit_model(model, tf_train_dataset, tf_validation_dataset)
-        return history, model
+        return [history], model
  
     def __create_comple_model(self):
         model = self.create_classifier_model()
@@ -135,3 +146,16 @@ class BertTrain:
         )
         
         return model
+
+    def log_configuration(self):
+        log_phase_desc(f'BERT Model               : {BERT_MODEL_NAME}')
+        log_phase_desc(f'Do shuffle on splitting  : {PREPROCESS_DO_SHUFFLING}')
+        log_phase_desc(f'Bert batch size          : {BERT_BATCH_SIZE}')
+        
+        log_phase_desc(f'Bert epochs              : {BERT_EPOCHS_K_FOLD if BERT_USE_K_FOLD else BERT_EPOCHS}')
+        # log_phase_desc(f'Bert dropout rate        : {BERT_DROPOUT_RATE}')
+        log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
+        log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
+        log_phase_desc(f'Bert loss                : {self.__loss}')
+        log_phase_desc(f'Bert metrics             : {self.__metrics}')
+        log_phase_desc(f'Num labels               : {self.__num_labels}')
