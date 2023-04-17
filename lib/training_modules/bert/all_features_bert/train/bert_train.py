@@ -68,6 +68,7 @@ class BertTrain:
         
         histories, model = self.__do_training()
 
+        tf_test_dataset=None
         if not BERT_USE_K_FOLD:
             tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
 
@@ -76,8 +77,7 @@ class BertTrain:
         analyser = BertModelAnalysis(model=model, histories=histories)
         analyser.plot_bert_model()
 
-        if not BERT_USE_K_FOLD:
-            eval_res = analyser.evaluation(test_tensor_dataset=tf_test_dataset)
+        eval_res = analyser.evaluation(test_tensor_dataset=tf_test_dataset)
 
         analyser.plot_bert_evaluation_metrics(eval_res)
 
