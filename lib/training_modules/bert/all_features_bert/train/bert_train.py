@@ -12,6 +12,7 @@ from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
 import keras.backend as K
+import tensorflow as tf
 
 class BertTrain:
     def __init__(self, encoded_dataset, tokenizer):
@@ -35,7 +36,23 @@ class BertTrain:
             self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
     
     
-    def f1_score(p, y_true, y_pred):
+    def recall(self, y_true, y_pred):
+        y_true = K.ones_like(y_true)
+        true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        all_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+
+        recall = true_positives / (all_positives + K.epsilon())
+        return recall
+
+    def precision(self, y_true, y_pred):
+        y_true = K.ones_like(y_true)
+        true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+
+        predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+        precision = true_positives / (predicted_positives + K.epsilon())
+        return precision
+   
+    def f1_score(self, y_true, y_pred):
         true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
         possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
         predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
@@ -117,7 +134,11 @@ class BertTrain:
  
     def __create_comple_model(self):
         model = self.create_classifier_model()
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, self.f1_score])
+        model.compile(
+            optimizer=self.__optimizer, 
+            loss=self.__loss, 
+            metrics=[self.__acc_metric, self.precision, self.recall, self.f1_score]
+            )
         return model
     
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
