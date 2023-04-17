@@ -156,5 +156,5 @@ class BertTrain:
         log_phase_desc(f'Bert learning rate       : {BERT_LEARNING_RATE}')
         log_phase_desc(f'Bert optimizer           : {BERT_OPTIMIZER_NAME}')
         log_phase_desc(f'Bert loss                : {self.__loss}')
-        log_phase_desc(f'Bert metrics             : {self.__metrics}')
+        log_phase_desc(f'Bert metrics             : {self.__acc_metric}, {self.__f1_metric}')
         log_phase_desc(f'Num labels               : {self.__num_labels}')
