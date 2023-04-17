@@ -1,5 +1,5 @@
 from lib.models.evaluation_model import EvaluationModel
-from lib.models.metrics_model import MetricsModel
+from lib.models.metrics_model import MetricsModel, compute_max_mean
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
@@ -7,10 +7,7 @@ from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOC
 from lib.utils.log.logger import log_phase_desc
 from tabulate import tabulate
 
-def compute_max_mean(items): 
-    mean_of = sum(items) / len(items)
-    max_of = max(items)
-    return max_of, mean_of
+
 
 class BertModelAnalysis:
     def __init__(self, model, histories):

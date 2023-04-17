@@ -1,4 +1,3 @@
-from lib.training_modules.bert.analysis.bert_model_analysis import compute_max_mean
 
 
 class MetricsModel:
@@ -50,4 +49,8 @@ class MetricsModel:
     def loss_to_table(self, title_prefix=''):
         return self.__to_table(self.__accuracy, f'{title_prefix}Loss')
     
-    
+
+def compute_max_mean(items): 
+    mean_of = sum(items) / len(items)
+    max_of = max(items)
+    return max_of, mean_of
