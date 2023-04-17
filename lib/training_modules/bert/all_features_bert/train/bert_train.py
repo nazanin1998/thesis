@@ -106,7 +106,7 @@ class BertTrain:
  
     def __create_comple_model(self):
         model = self.create_classifier_model()
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, self.__f1_metric])
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, f1_score])
         return model
     
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
