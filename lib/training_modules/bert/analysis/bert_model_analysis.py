@@ -128,17 +128,13 @@ class BertModelAnalysis:
         
         
                 
-        EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_loss)
+        eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_loss)
+        print(eval_res)
         return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
 
 
     def print_evaluation_result(eval_result):
-        index = 0
-        l = []
-
-        for eval in eval_result:
-            index += 1
-            l.append(event.to_table_array())
+        data = eval_result.to_table_array()
             
         headers = ['Metric Name']
         for i in range (1 , eval_result.get_epoch_len()):
@@ -147,7 +143,7 @@ class BertModelAnalysis:
         headers.append("Max")
         headers.append("Mean")
         
-        table = tabulate(l, headers=headers, tablefmt='orgtbl')
+        table = tabulate(data, headers=headers, tablefmt='orgtbl')
 
         print(table)
 
