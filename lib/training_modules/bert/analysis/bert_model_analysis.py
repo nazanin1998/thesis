@@ -3,7 +3,7 @@ from lib.models.metrics_model import MetricsModel, compute_max_mean
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_USE_K_FOLD
+from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_K_FOLD, BERT_USE_K_FOLD
 from lib.utils.log.logger import log_phase_desc
 from tabulate import tabulate
 
@@ -138,13 +138,21 @@ class BertModelAnalysis:
         return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
 
 
-    def print_evaluation_result(eval_result):
+    def print_evaluation_result(self, eval_result):
         data = eval_result.to_table_array()
             
         headers = ['Metric Name']
-        for i in range (1 , eval_result.get_epoch_len()):
-            headers.append(f"Epoch-{i}")
-        
+        if BERT_USE_K_FOLD:
+            idx = 0
+            for res in eval_result:
+                idx +=1
+                epoch_num = idx % BERT_EPOCHS_K_FOLD
+                fold_num = round(idx / BERT_EPOCHS_K_FOLD)
+                headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
+        else:
+            for i in range (1 , eval_result.get_epoch_len()):
+                headers.append(f"Epoch-{i}")
+            
         headers.append("Max")
         headers.append("Mean")
         

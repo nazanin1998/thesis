@@ -68,7 +68,8 @@ class BertTrain:
         
         histories, model = self.__do_training()
 
-        tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
+        if not BERT_USE_K_FOLD:
+            tf_test_dataset = self.prepare_ds(model, self.__encoded_dataset[TEST])
 
         model.summary()
 
