@@ -31,15 +31,3 @@ def get_sparse_categorical_acc_metric():
 def get_sparse_categorical_cross_entropy():
     return tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
-
-def f1_score(y_true, y_pred): #taken from old keras source code
-    # print(f'y_true {y_true}')
-    # print(f'y_pred {y_pred}')
-    # print(f'p {p}')
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (possible_positives + K.epsilon())
-    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
-    return f1_val

@@ -1,4 +1,4 @@
-from lib.training_modules.base.train.base_train import f1_score, get_optimizer_from_conf, get_sparse_categorical_acc_metric, get_sparse_categorical_cross_entropy
+from lib.training_modules.base.train.base_train import  get_optimizer_from_conf, get_sparse_categorical_acc_metric, get_sparse_categorical_cross_entropy
 import tensorflow
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
@@ -33,7 +33,17 @@ class BertTrain:
         else:
             self.__validation_steps = len(encoded_dataset[VALIDATION]) // BERT_BATCH_SIZE
     
-
+    
+    def f1_score(p, y_true, y_pred):
+        true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+        predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+        precision = true_positives / (predicted_positives + K.epsilon())
+        recall = true_positives / (possible_positives + K.epsilon())
+        f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
+        return f1_val
+    
+    
     def start(self):
         log_start_phase(2, 'BERT MODEL STARTED')
         self.log_configuration()
@@ -106,7 +116,7 @@ class BertTrain:
  
     def __create_comple_model(self):
         model = self.create_classifier_model()
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, f1_score])
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, self.f1_score])
         return model
     
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):
