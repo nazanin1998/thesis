@@ -1,4 +1,4 @@
-from lib.training_modules.base.train.base_train import get_optimizer_from_conf, get_sparse_categorical_acc_metric, get_sparse_categorical_cross_entropy
+from lib.training_modules.base.train.base_train import f1_score, get_optimizer_from_conf, get_sparse_categorical_acc_metric, get_sparse_categorical_cross_entropy
 import tensorflow
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad
@@ -12,20 +12,16 @@ from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
 
-
 class BertTrain:
     def __init__(self, encoded_dataset, tokenizer):
         self.__tokenizer = tokenizer
         self.__encoded_dataset = encoded_dataset
-        
-        self.__loss = tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.__metrics = tensorflow.keras.metrics.SparseCategoricalAccuracy(
-            'accuracy', dtype=tensorflow.float32)
-
+    
         self.__num_labels = len(self.__encoded_dataset[TRAIN].unique(PHEME_LABEL_SECONDARY_COL_NAME))
 
         self.__loss = get_sparse_categorical_cross_entropy()
-        self.__metrics = get_sparse_categorical_acc_metric()
+        self.__acc_metric = get_sparse_categorical_acc_metric()
+        self.__f1_metric = f1_score()
         self.__optimizer = get_optimizer_from_conf()
 
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
@@ -110,7 +106,7 @@ class BertTrain:
  
     def __create_comple_model(self):
         model = self.create_classifier_model()
-        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__metrics])
+        model.compile(optimizer=self.__optimizer, loss=self.__loss, metrics=[self.__acc_metric, self.__f1_metric])
         return model
     
     def __fit_model(self, model, tf_train_dataset, tf_validation_dataset):

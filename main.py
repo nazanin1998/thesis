@@ -12,7 +12,7 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
-BertModelAnalysis("", '').plot_bert_evaluation_metrics('','','','')
+# BertModelAnalysis("", '').plot_bert_evaluation_metrics('','','','')
 if not ENABLE_GPU:
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
