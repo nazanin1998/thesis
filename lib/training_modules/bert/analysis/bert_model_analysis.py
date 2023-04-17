@@ -103,10 +103,18 @@ class BertModelAnalysis:
         log_phase_desc(f'Validation (MAX)  => Accuracy: {validation_acc_max}, Loss: {validation_loss_max}')
         
         test_loss, test_accuracy =0,0
+        test_metrics=''
         if not BERT_USE_K_FOLD:
             print(self.__model.metrics_names)
+            # ['loss', 'accuracy', 'precision', 'recall', 'f1_score']
             result = self.__model.evaluate(test_tensor_dataset)
-            
+            test_metrics = MetricsModel(
+                accuracy= result[1], 
+                precision=result[2], 
+                recall=result[3], 
+                loss= result[0], 
+                f1_score=result[4],
+                )
             log_phase_desc(f'Test              => {result}')
         
         train_total_metrics = MetricsModel(
@@ -123,10 +131,10 @@ class BertModelAnalysis:
             loss= validation_loss_list, 
             f1_score=validation_f1_score_list,)
         
-        
                 
-        eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_loss)
+        eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_metrics)
         print(eval_res)
+        self.print_evaluation_result(eval_res)
         return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
 
 
