@@ -1,5 +1,4 @@
 import tensorflow
-import keras.backend as K
 
 from lib.training_modules.bert.bert_configurations import BERT_OPTIMIZER_NAME, BERT_LEARNING_RATE
 from keras.optimizers import Adam, SGD, Adamax, Adadelta, Adagrad

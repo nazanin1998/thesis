@@ -11,6 +11,7 @@ from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnal
 from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_K_FOLD, BERT_MODEL_NAME, BERT_USE_K_FOLD, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
+import keras.backend as K
 
 class BertTrain:
     def __init__(self, encoded_dataset, tokenizer):
