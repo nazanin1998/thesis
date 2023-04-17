@@ -21,7 +21,7 @@ class BertModelAnalysis:
             print()
 
     @staticmethod
-    def plot_bert_evaluation_metrics(train_acc, val_acc, train_loss, val_loss):
+    def plot_bert_evaluation_metrics(eval_res):
         
         fig = plt.figure(figsize=(10, 10))
         fig.tight_layout()
@@ -83,30 +83,9 @@ class BertModelAnalysis:
             validation_f1_score_list.extend(val_metrics.get_f1_score())
             validation_precision_list.extend(val_metrics.get_precision())
             
-        train_acc_max, train_acc_mean = compute_max_mean(train_acc_list)
-        train_loss_max, train_loss_mean = compute_max_mean(train_loss_list)
-        train_recall_max, train_recall_mean = compute_max_mean(train_recall_list)
-        train_f1_score_max, train_f1_score_mean = compute_max_mean(train_f1_score_list)
-        train_precision_max, train_precision_mean = compute_max_mean(train_precision_list)
-        
-        validation_acc_max, validation_acc_mean = compute_max_mean(validation_acc_list)
-        validation_loss_max, validation_loss_mean = compute_max_mean(validation_loss_list)
-        validation_recall_max, validation_recall_mean = compute_max_mean(validation_recall_list)
-        validation_f1_score_max, validation_f1_score_mean = compute_max_mean(validation_f1_score_list)
-        validation_precision_max, validation_precision_mean = compute_max_mean(validation_precision_list)
 
-        log_phase_desc(f'Train             => Accuracy: {train_acc_list}, Loss: {train_loss_list}')
-        log_phase_desc(f'Validation        => Accuracy: {validation_acc_list}, Loss: {validation_loss_list}\n')
-        log_phase_desc(f'Train(MEAN)       => Accuracy: {train_acc_mean}, Loss: {train_loss_mean}')
-        log_phase_desc(f'Train(MAX)        => Accuracy: {train_acc_max}, Loss: {train_loss_max}\n')
-        log_phase_desc(f'Validation (MEAN) => Accuracy: {validation_acc_mean}, Loss: {validation_loss_mean}')
-        log_phase_desc(f'Validation (MAX)  => Accuracy: {validation_acc_max}, Loss: {validation_loss_max}')
-        
-        test_loss, test_accuracy =0,0
         test_metrics=''
         if not BERT_USE_K_FOLD:
-            print(self.__model.metrics_names)
-            # ['loss', 'accuracy', 'precision', 'recall', 'f1_score']
             result = self.__model.evaluate(test_tensor_dataset)
             test_metrics = MetricsModel(
                 accuracy= result[1], 
@@ -115,27 +94,25 @@ class BertModelAnalysis:
                 loss= result[0], 
                 f1_score=result[4],
                 )
-            log_phase_desc(f'Test              => {result}')
         
         train_total_metrics = MetricsModel(
             accuracy= train_acc_list, 
             precision=train_precision_list, 
             recall=train_recall_list, 
             loss= train_loss_list, 
-            f1_score=train_f1_score_list,)
+            f1_score=train_f1_score_list)
         
         val_total_metrics = MetricsModel(
             accuracy= validation_acc_list, 
             precision=validation_precision_list, 
             recall=validation_recall_list, 
             loss= validation_loss_list, 
-            f1_score=validation_f1_score_list,)
+            f1_score=validation_f1_score_list)
         
                 
         eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_metrics)
-        print(eval_res)
         self.print_evaluation_result(eval_res)
-        return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
+        return eval_res
 
 
     def print_evaluation_result(self, eval_result):
@@ -158,6 +135,14 @@ class BertModelAnalysis:
         
         table = tabulate(data, headers=headers, tablefmt='orgtbl')
 
+        if not BERT_USE_K_FOLD:
+            test_res = eval_result.get_test()
+            print(f"TEST RESULT => Accuracy:  {test_res.get_accuracy()}, ")
+            print(f"               Recall:    {test_res.get_recall()}, ")
+            print(f"               Precision: {test_res.get_precision()}, ")
+            print(f"               F1 Score:  {test_res.get_f1_score()}, ")
+            print(f"               Loss:      {test_res.get_loss()}, ")
+            
         print(table)
 
     def get_history_metrics(self, hist):
