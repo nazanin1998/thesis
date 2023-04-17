@@ -76,8 +76,8 @@ class BertTrain:
         analyser = BertModelAnalysis(model=model, histories=histories)
         analyser.plot_bert_model()
 
-        eval_res = analyser.evaluation(
-            test_tensor_dataset=tf_test_dataset)
+        if not BERT_USE_K_FOLD:
+            eval_res = analyser.evaluation(test_tensor_dataset=tf_test_dataset)
 
         analyser.plot_bert_evaluation_metrics(eval_res)
 
