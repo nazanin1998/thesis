@@ -21,7 +21,7 @@ class BertTrain:
 
         self.__loss = get_sparse_categorical_cross_entropy()
         self.__acc_metric = get_sparse_categorical_acc_metric()
-        self.__f1_metric = f1_score()
+        self.__f1_metric = f1_score
         self.__optimizer = get_optimizer_from_conf()
 
         self.__steps_per_epoch = len(encoded_dataset[TRAIN]) // BERT_BATCH_SIZE
