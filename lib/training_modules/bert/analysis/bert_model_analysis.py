@@ -150,7 +150,7 @@ class BertModelAnalysis:
                 fold_num = round(idx / BERT_EPOCHS_K_FOLD)
                 headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
         else:
-            for i in range (1 , eval_result.get_epoch_len()):
+            for i in range (1 , eval_result.get_epoch_len()+1):
                 headers.append(f"Epoch-{i}")
             
         headers.append("Max")

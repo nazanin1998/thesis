@@ -19,17 +19,17 @@ class EvaluationModel:
 
     def to_table_array(self):
         return [
-            self.__train.acc_to_table(title_prefix='TRAIN'), 
-            self.__train.recall_to_table(title_prefix='TRAIN'), 
-            self.__train.precision_to_table(title_prefix='TRAIN'), 
-            self.__train.f1_to_table(title_prefix='TRAIN'), 
-            self.__train.loss_to_table(title_prefix='TRAIN'), 
+            self.__train.acc_to_table(title_prefix='TRAIN-'), 
+            self.__train.recall_to_table(title_prefix='TRAIN-'), 
+            self.__train.precision_to_table(title_prefix='TRAIN-'), 
+            self.__train.f1_to_table(title_prefix='TRAIN-'), 
+            self.__train.loss_to_table(title_prefix='TRAIN-'), 
             
-            self.__validation.acc_to_table(title_prefix='VALIDATION'), 
-            self.__validation.recall_to_table(title_prefix='VALIDATION'), 
-            self.__validation.precision_to_table(title_prefix='VALIDATION'), 
-            self.__validation.f1_to_table(title_prefix='VALIDATION'), 
-            self.__validation.loss_to_table(title_prefix='VALIDATION'), 
+            self.__validation.acc_to_table(title_prefix='VALIDATION-'), 
+            self.__validation.recall_to_table(title_prefix='VALIDATION-'), 
+            self.__validation.precision_to_table(title_prefix='VALIDATION-'), 
+            self.__validation.f1_to_table(title_prefix='VALIDATION-'), 
+            self.__validation.loss_to_table(title_prefix='VALIDATION-'), 
         ]
 
     def get_epoch_len(self):
