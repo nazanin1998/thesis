@@ -32,7 +32,7 @@ def get_sparse_categorical_cross_entropy():
     return tensorflow.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
-def f1_score(p, y_true, y_pred): #taken from old keras source code
+def f1_score(y_true, y_pred): #taken from old keras source code
     # print(f'y_true {y_true}')
     # print(f'y_pred {y_pred}')
     # print(f'p {p}')
