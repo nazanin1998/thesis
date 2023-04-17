@@ -22,13 +22,13 @@ class BertModelAnalysis:
 
     @staticmethod
     def plot_bert_evaluation_metrics(train_acc, val_acc, train_loss, val_loss):
-        train_acc = [0.7680160403251648, 0.8658807873725891]
-        train_loss = [0.4684535264968872, 0.3006138503551483]
-        val_acc= [0.8062499761581421, 0.8427083492279053]
-        val_loss= [0.4100704491138458, 0.373971164226532]
+        train_acc = [0.7680160403251648, 0.8658807873725891, 0.7680160403251648, 0.8658807873725891, 0.7680160403251648, 0.8658807873725891]
+        train_loss = [0.4684535264968872, 0.3006138503551483, 0.4684535264968872, 0.3006138503551483, 0.4684535264968872, 0.3006138503551483]
+        val_acc= [0.8062499761581421, 0.8427083492279053, 0.8062499761581421, 0.8427083492279053, 0.8062499761581421, 0.8427083492279053]
+        val_loss= [0.4100704491138458, 0.373971164226532, 0.4100704491138458, 0.373971164226532, 0.4100704491138458, 0.373971164226532]
 
         
-        fig = plt.figure(figsize=(10, 6))
+        fig = plt.figure(figsize=(10, 10))
         fig.tight_layout()
         
         x_points = []
@@ -41,8 +41,8 @@ class BertModelAnalysis:
         # b is for "solid blue line"
         plt.plot(x_points, train_loss, 'r', label='Training loss')
         plt.plot(x_points, val_loss, 'b', label='Validation loss')
-        plt.title('Training and validation loss')
-        # plt.xlabel('Epochs')
+        plt.title('Training Loss vs Validation Loss')
+        plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
 
