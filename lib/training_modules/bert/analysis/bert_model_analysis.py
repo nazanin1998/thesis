@@ -1,10 +1,13 @@
+from lib.models.evaluation_model import EvaluationModel
+from lib.models.metrics_model import MetricsModel
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_USE_K_FOLD
 from lib.utils.log.logger import log_phase_desc
+from tabulate import tabulate
 
-def compute_max_mean(items):
+def compute_max_mean(items): 
     mean_of = sum(items) / len(items)
     max_of = max(items)
     return max_of, mean_of
@@ -16,7 +19,7 @@ class BertModelAnalysis:
 
     def plot_bert_model(self):
         try:
-            tf.keras.utils.plot_model(self.__model, to_file="abb.png")
+            tf.keras.utils.plot_model(self.__model, to_file="bert_model.png")
         except:
             print()
 
@@ -54,25 +57,46 @@ class BertModelAnalysis:
         fold_index = 0
         
         train_acc_list = []
-        validation_acc_list = []
+        train_recall_list = []
+        train_precision_list = []
+        train_f1_score_list = []
         train_loss_list = []
+        
+        validation_acc_list = []
+        validation_recall_list = []
+        validation_precision_list = []
+        validation_f1_score_list = []
         validation_loss_list = []
         
         for history in self.__histories:
             
             fold_index += 1
             
-            train_loss, validation_loss, train_acc, validation_acc = self.get_history_metrics(history)
+            train_metrics, val_metrics = self.get_history_metrics(history)
+
+            train_loss_list.extend(train_metrics.get_loss())
+            train_acc_list.extend(train_metrics.get_accuracy())
+            train_recall_list.extend(train_metrics.get_recall())
+            train_f1_score_list.extend(train_metrics.get_f1_score())
+            train_precision_list.extend(train_metrics.get_precision())
             
-            train_acc_list.extend(train_acc)
-            train_loss_list.extend(train_loss)
-            validation_acc_list.extend(validation_acc)
-            validation_loss_list.extend(validation_loss)
+            validation_loss_list.extend(val_metrics.get_loss())
+            validation_acc_list.extend(val_metrics.get_accuracy())
+            validation_recall_list.extend(val_metrics.get_recall())
+            validation_f1_score_list.extend(val_metrics.get_f1_score())
+            validation_precision_list.extend(val_metrics.get_precision())
             
         train_acc_max, train_acc_mean = compute_max_mean(train_acc_list)
         train_loss_max, train_loss_mean = compute_max_mean(train_loss_list)
+        train_recall_max, train_recall_mean = compute_max_mean(train_recall_list)
+        train_f1_score_max, train_f1_score_mean = compute_max_mean(train_f1_score_list)
+        train_precision_max, train_precision_mean = compute_max_mean(train_precision_list)
+        
         validation_acc_max, validation_acc_mean = compute_max_mean(validation_acc_list)
         validation_loss_max, validation_loss_mean = compute_max_mean(validation_loss_list)
+        validation_recall_max, validation_recall_mean = compute_max_mean(validation_recall_list)
+        validation_f1_score_max, validation_f1_score_mean = compute_max_mean(validation_f1_score_list)
+        validation_precision_max, validation_precision_mean = compute_max_mean(validation_precision_list)
 
         log_phase_desc(f'Train             => Accuracy: {train_acc_list}, Loss: {train_loss_list}')
         log_phase_desc(f'Validation        => Accuracy: {validation_acc_list}, Loss: {validation_loss_list}\n')
@@ -83,17 +107,67 @@ class BertModelAnalysis:
         
         test_loss, test_accuracy =0,0
         if not BERT_USE_K_FOLD:
-            test_loss, test_accuracy = self.__model.evaluate(test_tensor_dataset)
-            log_phase_desc(f'Test              => Accuracy: {test_accuracy}, Loss: {test_loss}')
+            print(self.__model.metrics_names)
+            result = self.__model.evaluate(test_tensor_dataset)
+            
+            log_phase_desc(f'Test              => {result}')
         
+        train_total_metrics = MetricsModel(
+            accuracy= train_acc_list, 
+            precision=train_precision_list, 
+            recall=train_recall_list, 
+            loss= train_loss_list, 
+            f1_score=train_f1_score_list,)
+        
+        val_total_metrics = MetricsModel(
+            accuracy= validation_acc_list, 
+            precision=validation_precision_list, 
+            recall=validation_recall_list, 
+            loss= validation_loss_list, 
+            f1_score=validation_f1_score_list,)
+        
+        
+                
+        EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_loss)
         return train_acc_list, validation_acc_list, train_loss_list, validation_loss_list, validation_acc_mean, validation_loss_mean, validation_acc_max, validation_loss_max, test_loss, test_accuracy
+
+
+    def print_evaluation_result(eval_result):
+        index = 0
+        l = []
+
+        for eval in eval_result:
+            index += 1
+            l.append(event.to_table_array())
+            
+        headers = ['Metric Name']
+        for i in range (1 , eval_result.get_epoch_len()):
+            headers.append(f"Epoch-{i}")
+        
+        headers.append("Max")
+        headers.append("Mean")
+        
+        table = tabulate(l, headers=headers, tablefmt='orgtbl')
+
+        print(table)
 
     def get_history_metrics(self, hist):
         history_dict = hist.history
 
-        train_loss = history_dict['loss']
-        validation_loss = history_dict['val_loss']
-        train_acc = history_dict['accuracy']
-        validation_acc = history_dict['val_accuracy']
-
-        return train_loss, validation_loss, train_acc, validation_acc
+        train_metrics = MetricsModel(
+            accuracy= history_dict['accuracy'], 
+            precision=history_dict['precision'], 
+            recall=history_dict['recall'], 
+            loss= history_dict['loss'], 
+            f1_score=history_dict['f1_score'], 
+        )
+       
+        val_metrics = MetricsModel(
+            accuracy= history_dict['val_accuracy'], 
+            precision=history_dict['val_precision'], 
+            recall=history_dict['val_recall'], 
+            loss= history_dict['val_loss'], 
+            f1_score=history_dict['val_f1_score'], 
+        )
+       
+        return train_metrics, val_metrics
