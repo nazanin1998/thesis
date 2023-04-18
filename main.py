@@ -1,11 +1,9 @@
 
 import os
-from lib.training_modules.base.analysis.base_analysis import get_moch_evaluatio_data
 from lib.training_modules.bert.all_features_bert.preprocess.bert_preprocessing import \
     BertPreprocessing
 from lib.training_modules.bert.all_features_bert.train.bert_train import BertTrain
 from lib.dataset_repositories.pheme.read_pheme import read_pheme
-from lib.training_modules.bert.all_features_bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import ENABLE_GPU
 r"""
     1- Read dataset...
@@ -13,29 +11,19 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
-print('before moch')
-print('afyer moch')
 
-BertModelAnalysis("", '').print_evaluation_result('eval_result')
+# BertModelAnalysis("", '').print_evaluation_result('eval_result')
 
-BertModelAnalysis("", '').plot_bert_evaluation_metrics('eval_result')
-# if not ENABLE_GPU:
-#     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# BertModelAnalysis("", '').plot_bert_evaluation_metrics('eval_result')
+if not ENABLE_GPU:
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+train_df, val_df, test_df = read_pheme()
 
+bert_preprocess = BertPreprocessing(train_df, val_df, test_df)
+encoded_dataset, tokenizer = bert_preprocess.start()
 
-
-# train_df, val_df, test_df = read_pheme()
-# # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
-# # bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
-# #
-# # BertModelImpl(train_tensor_dataset=train_tensor_dataset, val_tensor_dataset=val_tensor_dataset,
-# #               test_tensor_dataset=test_tensor_dataset, num_classes=label_classes, train_len=train_len,
-# #               validation_len=validation_len, test_len=test_len, bert_preprocess_model=bert_preprocess_model).start()
-# bert_preprocess = BertPreprocessing(train_df, val_df, test_df)
-# encoded_dataset, tokenizer = bert_preprocess.start()
-
-# BertTrain(encoded_dataset, tokenizer).start()
+BertTrain(encoded_dataset, tokenizer).start()
 # BertNew(train_df, val_df, test_df).start()
 # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len, bi_lstm_preprocess_model = \
 #     BiLstmPreprocess().start(
