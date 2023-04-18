@@ -116,12 +116,29 @@ class BertModelAnalysis:
 
 
     def print_evaluation_result(self, eval_result):
+        eval_result = EvaluationModel(
+            train=MetricsModel(
+                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+            validation=MetricsModel(
+                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+            test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
+        )
         data = eval_result.to_table_array()
             
         headers = ['Metric Name']
         if BERT_USE_K_FOLD:
             for i in range (1 , eval_result.get_epoch_len()+1):
                 epoch_num = i % BERT_EPOCHS_K_FOLD
+                if epoch_num == 0:
+                    epoch_num = BERT_EPOCHS_K_FOLD
                 fold_num = round(i / BERT_EPOCHS_K_FOLD)
                 headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
         else:

@@ -12,22 +12,24 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
-# BertModelAnalysis("", '').plot_bert_evaluation_metrics('','','','')
-if not ENABLE_GPU:
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+BertModelAnalysis("", '').print_evaluation_result('')
+# if not ENABLE_GPU:
+#     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-train_df, val_df, test_df = read_pheme()
-# train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
-# bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
-#
-# BertModelImpl(train_tensor_dataset=train_tensor_dataset, val_tensor_dataset=val_tensor_dataset,
-#               test_tensor_dataset=test_tensor_dataset, num_classes=label_classes, train_len=train_len,
-#               validation_len=validation_len, test_len=test_len, bert_preprocess_model=bert_preprocess_model).start()
-bert_preprocess = BertPreprocessing(train_df, val_df, test_df)
-encoded_dataset, tokenizer = bert_preprocess.start()
 
-BertTrain(encoded_dataset, tokenizer).start()
+
+# train_df, val_df, test_df = read_pheme()
+# # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, label_classes, train_len, validation_len, test_len, \
+# # bert_preprocess_model = BertPreprocessingImpl().start(train_df, val_df, test_df)
+# #
+# # BertModelImpl(train_tensor_dataset=train_tensor_dataset, val_tensor_dataset=val_tensor_dataset,
+# #               test_tensor_dataset=test_tensor_dataset, num_classes=label_classes, train_len=train_len,
+# #               validation_len=validation_len, test_len=test_len, bert_preprocess_model=bert_preprocess_model).start()
+# bert_preprocess = BertPreprocessing(train_df, val_df, test_df)
+# encoded_dataset, tokenizer = bert_preprocess.start()
+
+# BertTrain(encoded_dataset, tokenizer).start()
 # BertNew(train_df, val_df, test_df).start()
 # train_tensor_dataset, val_tensor_dataset, test_tensor_dataset, train_len, validation_len, test_len, bi_lstm_preprocess_model = \
 #     BiLstmPreprocess().start(
