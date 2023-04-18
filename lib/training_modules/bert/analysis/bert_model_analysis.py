@@ -38,7 +38,7 @@ class BertModelAnalysis:
                 recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
             test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
         )
-        fig = plt.figure(figsize=(10, 10))
+        fig = plt.figure(figsize=(2, 5))
         fig.tight_layout()
         
         x_points = []
@@ -46,7 +46,7 @@ class BertModelAnalysis:
            x_points.append(i)
             
 
-        plt.subplot(6, 1, 1)
+        plt.subplot(5, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
         plt.plot(x_points, eval_result.get_train().get_loss(), 'r', label='Training loss')
@@ -56,7 +56,7 @@ class BertModelAnalysis:
         plt.ylabel('Loss')
         plt.legend()
 
-        plt.subplot(6, 1, 2)
+        plt.subplot(5, 1, 2)
         plt.plot(x_points, eval_result.get_train().get_accuracy(), 'r', label='Training acc')
         plt.plot(x_points, eval_result.get_validation().get_accuracy(), 'b', label='Validation acc')
         plt.title('Training Accuracy vs Validation Accuracy')
@@ -65,7 +65,7 @@ class BertModelAnalysis:
         # plt.legend(loc='lower right')
 
 
-        plt.subplot(6, 1, 3)
+        plt.subplot(5, 1, 3)
         plt.plot(x_points,  eval_result.get_train().get_recall(), 'r', label='Training Recall')
         plt.plot(x_points,  eval_result.get_validation().get_recall(), 'b', label='Validation Recall')
         plt.title('Training Recall vs Validation Recall')
@@ -74,7 +74,7 @@ class BertModelAnalysis:
         # plt.legend(loc='lower right')
         plt.savefig("plot_bert.png")
         
-        plt.subplot(6, 1, 4)
+        plt.subplot(5, 1, 4)
         plt.plot(x_points,  eval_result.get_train().get_precision(), 'r', label='Training Precision')
         plt.plot(x_points,  eval_result.get_validation().get_precision(), 'b', label='Validation Precision')
         plt.title('Training Precision vs Validation Precision')
@@ -82,7 +82,7 @@ class BertModelAnalysis:
         plt.ylabel('Precision')
         # plt.legend(loc='lower right')
         
-        plt.subplot(6, 1, 5)
+        plt.subplot(5, 1, 5)
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'r', label='Training F1 Score')
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'b', label='Validation F1 Score')
         plt.title('Training F1 Score vs Validation F1 Score')
