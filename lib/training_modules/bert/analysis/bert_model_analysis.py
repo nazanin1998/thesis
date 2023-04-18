@@ -7,6 +7,7 @@ from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOC
 from lib.utils.log.logger import log_phase_desc
 from tabulate import tabulate
 
+import math
 
 
 class BertModelAnalysis:
@@ -140,7 +141,7 @@ class BertModelAnalysis:
                 epoch_num = i % BERT_EPOCHS_K_FOLD
                 if epoch_num == 0:
                     epoch_num = BERT_EPOCHS_K_FOLD
-                fold_num = round(i / BERT_EPOCHS_K_FOLD)
+                fold_num = math.ceil(i / BERT_EPOCHS_K_FOLD)
                 print(f" epoch_num is {epoch_num}")
                 print(f" fold_num is {fold_num}")
                 headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
