@@ -1,13 +1,12 @@
 from lib.models.evaluation_model import EvaluationModel
-from lib.models.metrics_model import MetricsModel, compute_max_mean
-import tensorflow as tf
+from lib.models.metrics_model import MetricsModel
 from matplotlib import pyplot as plt
+from lib.training_modules.base.analysis.base_analysis import convert_test_eval_result_to_metric_model, get_history_metrics, get_moch_evaluatio_data, make_header_for_eval_table, plot_model
 
 from lib.training_modules.bert.bert_configurations import BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_K_FOLD, BERT_USE_K_FOLD
 from lib.utils.log.logger import log_phase_desc
 from tabulate import tabulate
 
-import math
 
 
 class BertModelAnalysis:
@@ -16,29 +15,12 @@ class BertModelAnalysis:
         self.__histories = histories
 
     def plot_bert_model(self):
-        try:
-            tf.keras.utils.plot_model(self.__model, to_file="bert_model.png")
-        except:
-            print()
-
-        
+        plot_model(self.__model)
+    
+    
     @staticmethod
     def plot_bert_evaluation_metrics(eval_res):
-        eval_result = EvaluationModel(
-            train=MetricsModel(
-                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-            validation=MetricsModel(
-                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-            test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
-        )
+        eval_result = get_moch_evaluatio_data()
         fig = plt.figure(figsize=(20, 20))
         fig.tight_layout()
         
@@ -109,7 +91,7 @@ class BertModelAnalysis:
             
             fold_index += 1
             
-            train_metrics, val_metrics = self.get_history_metrics(history)
+            train_metrics, val_metrics = get_history_metrics(history)
 
             train_loss_list.extend(train_metrics.get_loss())
             train_acc_list.extend(train_metrics.get_accuracy())
@@ -123,18 +105,6 @@ class BertModelAnalysis:
             validation_f1_score_list.extend(val_metrics.get_f1_score())
             validation_precision_list.extend(val_metrics.get_precision())
             
-
-        test_metrics=''
-        if not BERT_USE_K_FOLD:
-            result = self.__model.evaluate(test_tensor_dataset)
-            test_metrics = MetricsModel(
-                accuracy= result[1], 
-                precision=result[2], 
-                recall=result[3], 
-                loss= result[0], 
-                f1_score=result[4],
-                )
-        
         train_total_metrics = MetricsModel(
             accuracy= train_acc_list, 
             precision=train_precision_list, 
@@ -149,8 +119,13 @@ class BertModelAnalysis:
             loss= validation_loss_list, 
             f1_score=validation_f1_score_list)
         
-                
-        eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_metrics)
+        if not BERT_USE_K_FOLD:
+            result = self.__model.evaluate(test_tensor_dataset)
+            test_metrics = convert_test_eval_result_to_metric_model(result)    
+            eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics, test= test_metrics)
+        else:
+            eval_res = EvaluationModel(train=train_total_metrics, validation=val_total_metrics)
+        
         self.print_evaluation_result(eval_res)
         return eval_res
 
@@ -159,20 +134,7 @@ class BertModelAnalysis:
        
         data = eval_result.to_table_array()
             
-        headers = ['Metric Name']
-        if BERT_USE_K_FOLD:
-            for i in range (1 , eval_result.get_epoch_len()+1):
-                epoch_num = i % BERT_EPOCHS_K_FOLD
-                if epoch_num == 0:
-                    epoch_num = BERT_EPOCHS_K_FOLD
-                fold_num = math.ceil(i / BERT_EPOCHS_K_FOLD)
-                headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
-        else:
-            for i in range (1 , eval_result.get_epoch_len()+1):
-                headers.append(f"Epoch-{i}")
-            
-        headers.append("Max")
-        headers.append("Mean")
+        headers = make_header_for_eval_table(eval_result)
         
         table = tabulate(data, headers=headers, tablefmt='orgtbl')
 
@@ -186,23 +148,4 @@ class BertModelAnalysis:
             
         print(table)
 
-    def get_history_metrics(self, hist):
-        history_dict = hist.history
-
-        train_metrics = MetricsModel(
-            accuracy= history_dict['accuracy'], 
-            precision=history_dict['precision'], 
-            recall=history_dict['recall'], 
-            loss= history_dict['loss'], 
-            f1_score=history_dict['f1_score'], 
-        )
-       
-        val_metrics = MetricsModel(
-            accuracy= history_dict['val_accuracy'], 
-            precision=history_dict['val_precision'], 
-            recall=history_dict['val_recall'], 
-            loss= history_dict['val_loss'], 
-            f1_score=history_dict['val_f1_score'], 
-        )
-       
-        return train_metrics, val_metrics
+   

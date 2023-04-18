@@ -3,7 +3,7 @@ from lib.utils.constants import TRAIN
 
 class EvaluationModel:
     
-    def __init__(self, train, validation, test):
+    def __init__(self, train, validation, test=None):
         self.__train = train
         self.__validation = validation
         self.__test = test
