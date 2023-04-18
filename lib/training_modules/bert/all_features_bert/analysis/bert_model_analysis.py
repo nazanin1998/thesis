@@ -63,7 +63,7 @@ class BertModelAnalysis:
         
         plt.subplot(325)
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'r', label='Training F1 Score')
-        plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'b', label='Validation F1 Score')
+        plt.plot(x_points,  eval_result.get_validation().get_f1_score(), 'b', label='Validation F1 Score')
         plt.title('Training F1 Score vs Validation F1 Score')
         plt.xlabel('Epoch')
         plt.ylabel('F1 Score')
