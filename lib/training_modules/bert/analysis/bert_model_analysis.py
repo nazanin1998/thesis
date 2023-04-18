@@ -56,7 +56,7 @@ class BertModelAnalysis:
         plt.ylabel('Loss')
         plt.legend()
 
-        plt.subplot(5, 1, 2)
+        plt.subplot(5, 2, 1)
         plt.plot(x_points, eval_result.get_train().get_accuracy(), 'r', label='Training acc')
         plt.plot(x_points, eval_result.get_validation().get_accuracy(), 'b', label='Validation acc')
         plt.title('Training Accuracy vs Validation Accuracy')
@@ -65,7 +65,7 @@ class BertModelAnalysis:
         # plt.legend(loc='lower right')
 
 
-        plt.subplot(5, 1, 3)
+        plt.subplot(5, 1, 2)
         plt.plot(x_points,  eval_result.get_train().get_recall(), 'r', label='Training Recall')
         plt.plot(x_points,  eval_result.get_validation().get_recall(), 'b', label='Validation Recall')
         plt.title('Training Recall vs Validation Recall')
@@ -74,7 +74,7 @@ class BertModelAnalysis:
         # plt.legend(loc='lower right')
         plt.savefig("plot_bert.png")
         
-        plt.subplot(5, 1, 4)
+        plt.subplot(5, 2, 2)
         plt.plot(x_points,  eval_result.get_train().get_precision(), 'r', label='Training Precision')
         plt.plot(x_points,  eval_result.get_validation().get_precision(), 'b', label='Validation Precision')
         plt.title('Training Precision vs Validation Precision')
@@ -82,7 +82,7 @@ class BertModelAnalysis:
         plt.ylabel('Precision')
         # plt.legend(loc='lower right')
         
-        plt.subplot(5, 1, 5)
+        plt.subplot(5, 3, 1)
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'r', label='Training F1 Score')
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'b', label='Validation F1 Score')
         plt.title('Training F1 Score vs Validation F1 Score')
