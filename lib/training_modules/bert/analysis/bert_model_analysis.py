@@ -23,34 +23,75 @@ class BertModelAnalysis:
 
     @staticmethod
     def plot_bert_evaluation_metrics(eval_res):
-        
+        eval_result = EvaluationModel(
+            train=MetricsModel(
+                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+            validation=MetricsModel(
+                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+            test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
+        )
         fig = plt.figure(figsize=(10, 10))
         fig.tight_layout()
         
         x_points = []
-        for i in range (1, len(train_acc)+1):
+        for i in range (1, eval_result.get_epoch_len()+1):
            x_points.append(i)
             
 
-        plt.subplot(2, 1, 1)
+        plt.subplot(6, 1, 1)
         # r is for "solid red line"
         # b is for "solid blue line"
-        plt.plot(x_points, train_loss, 'r', label='Training loss')
-        plt.plot(x_points, val_loss, 'b', label='Validation loss')
+        plt.plot(x_points, eval_result.get_train().get_loss(), 'r', label='Training loss')
+        plt.plot(x_points, eval_result.get_validation().get_loss(), 'b', label='Validation loss')
         plt.title('Training Loss vs Validation Loss')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.legend()
 
-        plt.subplot(2, 1, 2)
-        plt.plot(x_points, train_acc, 'r', label='Training acc')
-        plt.plot(x_points, val_acc, 'b', label='Validation acc')
+        plt.subplot(6, 1, 2)
+        plt.plot(x_points, eval_result.get_train().get_accuracy(), 'r', label='Training acc')
+        plt.plot(x_points, eval_result.get_validation().get_accuracy(), 'b', label='Validation acc')
         plt.title('Training Accuracy vs Validation Accuracy')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
+        # plt.legend(loc='lower right')
+
+
+        plt.subplot(6, 1, 3)
+        plt.plot(x_points,  eval_result.get_train().get_recall(), 'r', label='Training Recall')
+        plt.plot(x_points,  eval_result.get_validation().get_recall(), 'b', label='Validation Recall')
+        plt.title('Training Recall vs Validation Recall')
+        plt.xlabel('Epoch')
+        plt.ylabel('Recall')
+        # plt.legend(loc='lower right')
+        plt.savefig("plot_bert.png")
+        
+        plt.subplot(6, 1, 4)
+        plt.plot(x_points,  eval_result.get_train().get_precision(), 'r', label='Training Precision')
+        plt.plot(x_points,  eval_result.get_validation().get_precision(), 'b', label='Validation Precision')
+        plt.title('Training Precision vs Validation Precision')
+        plt.xlabel('Epoch')
+        plt.ylabel('Precision')
+        # plt.legend(loc='lower right')
+        
+        plt.subplot(6, 1, 5)
+        plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'r', label='Training F1 Score')
+        plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'b', label='Validation F1 Score')
+        plt.title('Training F1 Score vs Validation F1 Score')
+        plt.xlabel('Epoch')
+        plt.ylabel('F1 Score')
         plt.legend(loc='lower right')
         plt.savefig("plot_bert.png")
-
+        
+        
     def evaluation(self, test_tensor_dataset = None):
         fold_index = 0
         
@@ -117,33 +158,30 @@ class BertModelAnalysis:
 
 
     def print_evaluation_result(self, eval_result):
-        eval_result = EvaluationModel(
-            train=MetricsModel(
-                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-            validation=MetricsModel(
-                accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-                loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-                recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-            test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
-        )
+        # eval_result = EvaluationModel(
+        #     train=MetricsModel(
+        #         accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+        #         f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+        #         loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+        #         precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+        #         recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+        #     validation=MetricsModel(
+        #         accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+        #         f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
+        #         loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+        #         precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
+        #         recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
+        #     test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
+        # )
         data = eval_result.to_table_array()
             
         headers = ['Metric Name']
         if BERT_USE_K_FOLD:
             for i in range (1 , eval_result.get_epoch_len()+1):
-                print(f" i is {i}")
                 epoch_num = i % BERT_EPOCHS_K_FOLD
                 if epoch_num == 0:
                     epoch_num = BERT_EPOCHS_K_FOLD
                 fold_num = math.ceil(i / BERT_EPOCHS_K_FOLD)
-                print(f" epoch_num is {epoch_num}")
-                print(f" fold_num is {fold_num}")
                 headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
         else:
             for i in range (1 , eval_result.get_epoch_len()+1):
