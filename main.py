@@ -1,5 +1,6 @@
 
 import os
+from lib.training_modules.base.analysis.base_analysis import get_moch_evaluatio_data
 from lib.training_modules.bert.all_features_bert.preprocess.bert_preprocessing import \
     BertPreprocessing
 from lib.training_modules.bert.all_features_bert.train.bert_train import BertTrain
@@ -12,9 +13,11 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
-BertModelAnalysis("", '').evaluation('')
+eval_result = get_moch_evaluatio_data()
 
-BertModelAnalysis("", '').plot_bert_evaluation_metrics('')
+BertModelAnalysis("", '').print_evaluation_result(eval_result)
+
+BertModelAnalysis("", '').plot_bert_evaluation_metrics(eval_result)
 # if not ENABLE_GPU:
 #     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
