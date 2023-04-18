@@ -21,6 +21,7 @@ class BertModelAnalysis:
         except:
             print()
 
+        
     @staticmethod
     def plot_bert_evaluation_metrics(eval_res):
         eval_result = EvaluationModel(
@@ -46,49 +47,46 @@ class BertModelAnalysis:
            x_points.append(i)
             
 
-        plt.subplot(5, 1, 1)
-        # r is for "solid red line"
-        # b is for "solid blue line"
+        plt.subplot(321)
         plt.plot(x_points, eval_result.get_train().get_loss(), 'r', label='Training loss')
         plt.plot(x_points, eval_result.get_validation().get_loss(), 'b', label='Validation loss')
         plt.title('Training Loss vs Validation Loss')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
-        plt.legend()
+        plt.grid(True)
 
-        plt.subplot(5, 2, 1)
+        plt.subplot(322)
         plt.plot(x_points, eval_result.get_train().get_accuracy(), 'r', label='Training acc')
         plt.plot(x_points, eval_result.get_validation().get_accuracy(), 'b', label='Validation acc')
         plt.title('Training Accuracy vs Validation Accuracy')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
-        # plt.legend(loc='lower right')
+        plt.grid(True)
 
 
-        plt.subplot(5, 1, 2)
+        plt.subplot(323)
         plt.plot(x_points,  eval_result.get_train().get_recall(), 'r', label='Training Recall')
         plt.plot(x_points,  eval_result.get_validation().get_recall(), 'b', label='Validation Recall')
         plt.title('Training Recall vs Validation Recall')
         plt.xlabel('Epoch')
         plt.ylabel('Recall')
-        # plt.legend(loc='lower right')
-        plt.savefig("plot_bert.png")
+        plt.grid(True)
         
-        plt.subplot(5, 2, 2)
+        plt.subplot(324)
         plt.plot(x_points,  eval_result.get_train().get_precision(), 'r', label='Training Precision')
         plt.plot(x_points,  eval_result.get_validation().get_precision(), 'b', label='Validation Precision')
         plt.title('Training Precision vs Validation Precision')
         plt.xlabel('Epoch')
         plt.ylabel('Precision')
-        # plt.legend(loc='lower right')
+        plt.grid(True)
         
-        plt.subplot(5, 3, 1)
+        plt.subplot(325)
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'r', label='Training F1 Score')
         plt.plot(x_points,  eval_result.get_train().get_f1_score(), 'b', label='Validation F1 Score')
         plt.title('Training F1 Score vs Validation F1 Score')
         plt.xlabel('Epoch')
         plt.ylabel('F1 Score')
-        plt.legend(loc='lower right')
+        plt.grid(True)
         plt.savefig("plot_bert.png")
         
         
@@ -158,21 +156,7 @@ class BertModelAnalysis:
 
 
     def print_evaluation_result(self, eval_result):
-        # eval_result = EvaluationModel(
-        #     train=MetricsModel(
-        #         accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-        #         f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-        #         loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-        #         precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-        #         recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-        #     validation=MetricsModel(
-        #         accuracy=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-        #         f1_score=[1, 1, 0.5, 0.9, 0.8 ,0.8],
-        #         loss=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-        #         precision=[1, 1, 0.5, 0.9, 0.8 ,0.8], 
-        #         recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
-        #     test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
-        # )
+       
         data = eval_result.to_table_array()
             
         headers = ['Metric Name']
