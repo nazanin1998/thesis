@@ -136,10 +136,13 @@ class BertModelAnalysis:
         headers = ['Metric Name']
         if BERT_USE_K_FOLD:
             for i in range (1 , eval_result.get_epoch_len()+1):
+                print(f" i is {i}")
                 epoch_num = i % BERT_EPOCHS_K_FOLD
                 if epoch_num == 0:
                     epoch_num = BERT_EPOCHS_K_FOLD
                 fold_num = round(i / BERT_EPOCHS_K_FOLD)
+                print(f" epoch_num is {epoch_num}")
+                print(f" fold_num is {fold_num}")
                 headers.append(f"Fold-{fold_num}/Epoch-{epoch_num}")
         else:
             for i in range (1 , eval_result.get_epoch_len()+1):
