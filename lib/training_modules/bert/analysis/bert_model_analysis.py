@@ -39,7 +39,7 @@ class BertModelAnalysis:
                 recall=[1, 1, 0.5, 0.9, 0.8 ,0.8]),
             test=MetricsModel(accuracy=1,f1_score=1,loss=1, precision=1, recall=1)
         )
-        fig = plt.figure(figsize=(2, 5))
+        fig = plt.figure(figsize=(20, 20))
         fig.tight_layout()
         
         x_points = []
