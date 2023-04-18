@@ -7,7 +7,7 @@ from transformers import TFAutoModelForSequenceClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
 from sklearn.model_selection import KFold
 from lib.utils.constants import PHEME_LABEL_SECONDARY_COL_NAME, TRAIN, VALIDATION, TEST
-from lib.training_modules.bert.analysis.bert_model_analysis import BertModelAnalysis
+from lib.training_modules.bert.all_features_bert.analysis.bert_model_analysis import BertModelAnalysis
 from lib.training_modules.bert.bert_configurations import BERT_BATCH_SIZE, BERT_EPOCHS, BERT_EPOCHS_K_FOLD, BERT_K_FOLD, BERT_MODEL_NAME, BERT_USE_K_FOLD, \
     PREPROCESS_DO_SHUFFLING, BERT_LEARNING_RATE, BERT_OPTIMIZER_NAME
 from lib.utils.log.logger import log_end_phase, log_line, log_start_phase, log_phase_desc
