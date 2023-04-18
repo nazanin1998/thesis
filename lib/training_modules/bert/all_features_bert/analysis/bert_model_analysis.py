@@ -19,7 +19,8 @@ class BertModelAnalysis:
     
     
     @staticmethod
-    def plot_bert_evaluation_metrics(eval_res):
+    def plot_bert_evaluation_metrics(eval_result):
+        eval_result = get_moch_evaluatio_data()
         fig = plt.figure(figsize=(20, 20))
         fig.tight_layout()
         
@@ -130,6 +131,7 @@ class BertModelAnalysis:
 
 
     def print_evaluation_result(self, eval_result):
+        eval_result = get_moch_evaluatio_data()
         print('print_evaluation_result')
         data = eval_result.to_table_array()
         print('print_evaluation_result')

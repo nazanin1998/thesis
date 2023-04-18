@@ -14,12 +14,11 @@ r"""
     4- Run Bert
 """
 print('before moch')
-eval_result = get_moch_evaluatio_data()
 print('afyer moch')
 
-BertModelAnalysis("", '').print_evaluation_result(eval_result)
+BertModelAnalysis("", '').print_evaluation_result('eval_result')
 
-BertModelAnalysis("", '').plot_bert_evaluation_metrics(eval_result)
+BertModelAnalysis("", '').plot_bert_evaluation_metrics('eval_result')
 # if not ENABLE_GPU:
 #     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
