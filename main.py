@@ -13,7 +13,9 @@ r"""
     3- Run BiLSTM
     4- Run Bert
 """
+print('before moch')
 eval_result = get_moch_evaluatio_data()
+print('afyer moch')
 
 BertModelAnalysis("", '').print_evaluation_result(eval_result)
 
