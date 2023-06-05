@@ -47,7 +47,7 @@ class MetricsModel:
         return self.__to_table(self.__f1_score, f'{title_prefix}F1 Score')
     
     def loss_to_table(self, title_prefix=''):
-        return self.__to_table(self.__accuracy, f'{title_prefix}Loss')
+        return self.__to_table(self.__loss, f'{title_prefix}Loss')
     
 
 def compute_max_mean(items): 
